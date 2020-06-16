@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="hu" xml:lang="hu">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>1 . fejezet A LOESS simító | Simítás, spline-regresszió, additív modellek</title>
+  <meta name="description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="1 . fejezet A LOESS simító | Simítás, spline-regresszió, additív modellek" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/" />
+  <meta property="og:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
+  <meta property="og:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="github-repo" content="tamas-ferenci/FerenciTamas_SmoothingSplinesGAM" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="1 . fejezet A LOESS simító | Simítás, spline-regresszió, additív modellek" />
+  
+  <meta name="twitter:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="twitter:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
+
+<meta name="author" content="Ferenci Tamás," />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-19799395-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-19799395-2');
+</script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Ferenci Tamás: Simítás,<br>spline-regresszió, additív<br>modellek</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Előszó</a></li>
+<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a><ul>
+<li class="chapter" data-level="1.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#motiváció"><i class="fa fa-check"></i><b>1.1</b> Motiváció</a></li>
+<li class="chapter" data-level="1.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-loess-simító-alapgondolata"><i class="fa fa-check"></i><b>1.2</b> A LOESS simító alapgondolata</a></li>
+<li class="chapter" data-level="1.3" data-path="a-loess-simító.html"><a href="a-loess-simító.html#lokalitás"><i class="fa fa-check"></i><b>1.3</b> Lokalitás</a></li>
+<li class="chapter" data-level="1.4" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinomiális-regresszió"><i class="fa fa-check"></i><b>1.4</b> Polinomiális regresszió</a></li>
+<li class="chapter" data-level="1.5" data-path="a-loess-simító.html"><a href="a-loess-simító.html#összerakva-az-építőelemeket-lokális-polinomiális-regressziókkal-közelítés"><i class="fa fa-check"></i><b>1.5</b> Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés</a></li>
+<li class="chapter" data-level="1.6" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-lokalitás"><i class="fa fa-check"></i><b>1.6</b> A paraméterek megválasztásának hatása: lokalitás</a></li>
+<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a><ul>
+<li class="chapter" data-level="1.7.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#kitérő-polinomiális-regresszió-illesztésének-szintaktikája-r-alatt"><i class="fa fa-check"></i><b>1.7.1</b> Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt</a></li>
+<li class="chapter" data-level="1.7.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinom-fokszámának-változtatása"><i class="fa fa-check"></i><b>1.7.2</b> Polinom fokszámának változtatása</a></li>
+</ul></li>
+<li class="chapter" data-level="1.8" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztása"><i class="fa fa-check"></i><b>1.8</b> A paraméterek megválasztása</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a><ul>
+<li class="chapter" data-level="2.1" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-regresszió"><i class="fa fa-check"></i><b>2.1</b> A regresszió</a></li>
+<li class="chapter" data-level="2.2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-becslése-mintából"><i class="fa fa-check"></i><b>2.2</b> Regresszió becslése mintából</a></li>
+<li class="chapter" data-level="2.3" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#paraméteres-és-nem-paraméteres-regresszió"><i class="fa fa-check"></i><b>2.3</b> Paraméteres és nem-paraméteres regresszió</a></li>
+<li class="chapter" data-level="2.4" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-lineáris-regresszió-kibővítése-nemlinearitások"><i class="fa fa-check"></i><b>2.4</b> A lineáris regresszió kibővítése, nemlinearitások</a></li>
+<li class="chapter" data-level="2.5" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#egy-példa"><i class="fa fa-check"></i><b>2.5</b> Egy példa</a></li>
+<li class="chapter" data-level="2.6" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-ötödfokú-polinommal"><i class="fa fa-check"></i><b>2.6</b> Regresszió ötödfokú polinommal</a></li>
+<li class="chapter" data-level="2.7" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#módosítás"><i class="fa fa-check"></i><b>2.7</b> Módosítás</a></li>
+<li class="chapter" data-level="2.8" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-tizedfokú-polinommal"><i class="fa fa-check"></i><b>2.8</b> Regresszió tizedfokú polinommal</a></li>
+<li class="chapter" data-level="2.9" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-a-jelenség-oka"><i class="fa fa-check"></i><b>2.9</b> Mi a jelenség oka?</a></li>
+<li class="chapter" data-level="2.10" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-lehet-a-megoldás"><i class="fa fa-check"></i><b>2.10</b> Mi lehet a megoldás?</a></li>
+<li class="chapter" data-level="2.11" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#természetes-köbös-spline"><i class="fa fa-check"></i><b>2.11</b> Természetes köbös spline</a></li>
+<li class="chapter" data-level="2.12" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-példa-regressziója-természetes-köbös-spline-nal"><i class="fa fa-check"></i><b>2.12</b> A példa regressziója természetes köbös spline-nal</a></li>
+<li class="chapter" data-level="2.13" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-az-előbbiben-a-fantasztikus"><i class="fa fa-check"></i><b>2.13</b> Mi az előbbiben a fantasztikus?</a></li>
+<li class="chapter" data-level="2.14" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-spline-regresszió-ereje"><i class="fa fa-check"></i><b>2.14</b> A spline-regresszió ereje</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a><ul>
+<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hogyan-becsüljük-meg-a-spline-regressziót"><i class="fa fa-check"></i><b>3.1.1</b> Hogyan becsüljük meg a spline-regressziót?</a></li>
+<li class="chapter" data-level="3.1.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-tere-mint-függvénytér"><i class="fa fa-check"></i><b>3.1.2</b> Polinomok tere mint függvénytér</a></li>
+<li class="chapter" data-level="3.1.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-terének-bázisa"><i class="fa fa-check"></i><b>3.1.3</b> Polinomok terének bázisa</a></li>
+<li class="chapter" data-level="3.1.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-polinomok-terének-dimenziója"><i class="fa fa-check"></i><b>3.1.4</b> A polinomok terének dimenziója</a></li>
+<li class="chapter" data-level="3.1.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#spline-ok-függvénytere"><i class="fa fa-check"></i><b>3.1.5</b> Spline-ok függvénytere</a></li>
+<li class="chapter" data-level="3.1.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hány-dimenziós-a-spline-ok-tere"><i class="fa fa-check"></i><b>3.1.6</b> Hány dimenziós a spline-ok tere?</a></li>
+<li class="chapter" data-level="3.1.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#mik-a-spline-ok-bázisfüggvényei"><i class="fa fa-check"></i><b>3.1.7</b> Mik a spline-ok bázisfüggvényei?</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-használatának-ereje"><i class="fa fa-check"></i><b>3.2.1</b> A bázisfüggvények használatának ereje</a></li>
+<li class="chapter" data-level="3.2.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használata-másodfokú-polinomnál"><i class="fa fa-check"></i><b>3.2.2</b> Bázisfüggvények használata másodfokú polinomnál</a></li>
+<li class="chapter" data-level="3.2.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használatának-előnye"><i class="fa fa-check"></i><b>3.2.3</b> Bázisfüggvények használatának előnye</a></li>
+<li class="chapter" data-level="3.2.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-1.-felvonás"><i class="fa fa-check"></i><b>3.2.4</b> A bázisfüggvények ereje, 1. felvonás</a></li>
+<li class="chapter" data-level="3.2.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-2.-felvonás"><i class="fa fa-check"></i><b>3.2.5</b> A bázisfüggvények ereje, 2. felvonás</a></li>
+<li class="chapter" data-level="3.2.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt"><i class="fa fa-check"></i><b>3.2.6</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#dimenzió-meghatározása"><i class="fa fa-check"></i><b>3.3.1</b> Dimenzió meghatározása</a></li>
+<li class="chapter" data-level="3.3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítás-fokának-meghatározása"><i class="fa fa-check"></i><b>3.3.2</b> Simítás fokának meghatározása</a></li>
+<li class="chapter" data-level="3.3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizált-regresszió"><i class="fa fa-check"></i><b>3.3.3</b> Penalizált regresszió</a></li>
+<li class="chapter" data-level="3.3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simasági-büntetőtag-meghatározása"><i class="fa fa-check"></i><b>3.3.4</b> A simasági büntetőtag meghatározása</a></li>
+<li class="chapter" data-level="3.3.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-1"><i class="fa fa-check"></i><b>3.3.5</b> Megvalósítás <code>R</code> alatt</a></li>
+<li class="chapter" data-level="3.3.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-büntetőtag-beépítése-a-regressziós-célfüggvénybe"><i class="fa fa-check"></i><b>3.3.6</b> A simítási büntetőtag beépítése a regressziós célfüggvénybe</a></li>
+<li class="chapter" data-level="3.3.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#regresszió-megoldása-a-penalizálással"><i class="fa fa-check"></i><b>3.3.7</b> Regresszió megoldása a penalizálással</a></li>
+<li class="chapter" data-level="3.3.8" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-2"><i class="fa fa-check"></i><b>3.3.8</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4.1</b> A simítási paraméter meghatározása</a></li>
+<li class="chapter" data-level="3.4.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-ocv"><i class="fa fa-check"></i><b>3.4.2</b> Keresztvalidációs módszerek: OCV</a></li>
+<li class="chapter" data-level="3.4.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-gcv"><i class="fa fa-check"></i><b>3.4.3</b> Keresztvalidációs módszerek: GCV</a></li>
+<li class="chapter" data-level="3.4.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-3"><i class="fa fa-check"></i><b>3.4.4</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a><ul>
+<li class="chapter" data-level="4.1" data-path="additív-modellek.html"><a href="additív-modellek.html#több-magyarázó-változó"><i class="fa fa-check"></i><b>4.1</b> Több magyarázó változó</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="http://www.medstat.hu/" target="blank">http://www.medstat.hu/</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Simítás, spline-regresszió, additív modellek</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+\[
+  \DeclareMathOperator*{\argmin}{arg\,min}
+  \DeclareMathOperator*{\argmax}{arg\,max}
+  \newcommand{\dif}{\mathop{}\!\mathrm{d}}
+\]
+<div id="a-loess-simító" class="section level1">
+<h1><span class="header-section-number">1 . fejezet</span> A LOESS simító</h1>
+<div class="handout">
+<p>
+A LOESS simítóról lesz szó
+</p>
+</div>
+<p>Ehhez az anyaghoz egyedül a <code>ggplot2</code> könyvtárra lesz szükségünk (illetve beállítjuk a véletlenszám-generátor seed-jét a reprodukálhatóság kedvéért):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="a-loess-simító.html#cb1-1"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="a-loess-simító.html#cb1-2"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span></code></pre></div>
+<div id="motiváció" class="section level2">
+<h2><span class="header-section-number">1.1</span> Motiváció</h2>
+<p>Első lépésben előkészítünk egy demonstrációs adatbázist. Szimulált adatokat fogunk használni (zajos szinusz), így mi is tudni fogjuk, hogy mi az <q>igazság</q>, a valódi függvény amiből a pontok jöttek:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="a-loess-simító.html#cb2-1"></a>n &lt;-<span class="st"> </span><span class="dv">101</span></span>
+<span id="cb2-2"><a href="a-loess-simító.html#cb2-2"></a>x &lt;-<span class="st"> </span>(<span class="dv">1</span><span class="op">:</span>n) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.1</span>)</span>
+<span id="cb2-3"><a href="a-loess-simító.html#cb2-3"></a>y &lt;-<span class="st"> </span><span class="kw">sin</span>(x<span class="op">/</span>n<span class="op">*</span>(<span class="dv">2</span><span class="op">*</span>pi))</span>
+<span id="cb2-4"><a href="a-loess-simító.html#cb2-4"></a>yobs &lt;-<span class="st"> </span>y <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="fl">0.2</span>)</span>
+<span id="cb2-5"><a href="a-loess-simító.html#cb2-5"></a>SimData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(x, y, yobs)</span>
+<span id="cb2-6"><a href="a-loess-simító.html#cb2-6"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(SimData, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb2-7"><a href="a-loess-simító.html#cb2-7"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">y =</span> y), <span class="dt">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="dt">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb2-8"><a href="a-loess-simító.html#cb2-8"></a>p</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Paraméteres görbeillesztésnél fel kell tételeznünk egy függvényformát (ti. ami a pontok mögött van a valóságban). Például, hogy lineáris:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="a-loess-simító.html#cb3-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_smooth</span>(<span class="dt">formula =</span> y<span class="op">~</span>x, <span class="dt">method =</span> <span class="st">&quot;lm&quot;</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ez az ábra jól mutatja ennek a fő problémáját: hogy ezt a feltételezést el is ronthatjuk! Természetesen vannak diagnosztikai eszközök ennek felderítésére, és ez alapján kereshetünk jobb függvényformát, de gyökerestül csak az oldja meg a problémát, ha olyan módszert találnánk, ami a nélkül működik, hogy egyáltalán fel kelljen tételeznie (bármilyen) függvényformát. Ezt oldják meg a simítási eljárások. (Lényegében nemparaméteres regresszióról van szó.)</p>
+<p>Annak az előnynek, hogy nem kell ilyen feltételezéssel élnünk (és így azt el sem ronthatjuk), természetesen ára van: kevésbé hatásosan becsülhető, mint a paraméteres illesztés, nincsenek számszerű paramétereink (aminek esetleg tárgyterületi interpretációt lehet adni), csak <q>ábrát tudunk rajzolni</q>, és végezetül extrapoláció sem lehetséges, legalábbis nem triviálisan.</p>
+</div>
+<div id="a-loess-simító-alapgondolata" class="section level2">
+<h2><span class="header-section-number">1.2</span> A LOESS simító alapgondolata</h2>
+<p>Az egyik legnépszerűbb megoldás a LOESS (locally weighted scatterplot smoothing, néha LOWESS, vagy Savitzky–Golay szűrő), melynek alapgondolata, hogy végigmegy az <span class="math inline">\(x\)</span>-változó releváns tartományán, és minden értékre meghatározza a pontfelhő ottani, tehát lokális közelítését, egy polinomális regresszióból. Utána az egész simítást ezekből a darabkákból építi fel.</p>
+<p>Legyen például a vizsgált érték a <span class="math inline">\(23.5\)</span>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="a-loess-simító.html#cb4-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">23.5</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="lokalitás" class="section level2">
+<h2><span class="header-section-number">1.3</span> Lokalitás</h2>
+<p>A lokalitást két eszközzel érjük el. Az egyik, hogy nem használjuk az összes pontot, csak a vizsgált értékhez legközelebb eső <span class="math inline">\(\alpha\)</span> hányadát (ha ez nem egész lenne, akkor felső egészrészt veszünk); ezt a paramétert szokták <code>span</code>-nek nevezni. Például, ha ez 75%, akkor a távolság ameddig figyelembe vesszük a pontokat:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="a-loess-simító.html#cb5-1"></a>span &lt;-<span class="st"> </span><span class="fl">0.75</span></span>
+<span id="cb5-2"><a href="a-loess-simító.html#cb5-2"></a>n<span class="op">*</span>span</span></code></pre></div>
+<pre><code>## [1] 75.75</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="a-loess-simító.html#cb7-1"></a><span class="kw">ceiling</span>(n<span class="op">*</span>span)</span></code></pre></div>
+<pre><code>## [1] 76</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="a-loess-simító.html#cb9-1"></a><span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>))</span></code></pre></div>
+<pre><code>##   [1]  0.3010648  0.4925435  1.4217864  1.5619826  2.4081023  2.4943871  3.4406099  3.4844204  4.3529248  4.4178779  5.4056164  5.4521850
+##  [13]  6.5016190  6.5417942  7.5044934  7.6358680  8.3875069  8.4897212  9.5387672  9.7214700 10.4946195 10.5621241 11.3622940 11.4610157
+##  [25] 12.3488219 12.4585005 13.4605710 13.5305388 14.4424219 14.4940687 15.4261675 15.6100025 16.4512571 16.5763176 17.4835476 17.5820468
+##  [37] 18.4670492 18.4746638 19.3404719 19.5696963 20.5556663 20.5835629 21.4311244 21.4816357 22.4292505 22.5626454 23.5364582 24.5768533
+##  [49] 25.4887654 26.5881108 27.5398106 28.4387974 29.5341120 30.3870637 31.6433024 32.6980400 33.4632779 34.3955865 35.5569720 36.4864945
+##  [61] 37.7401618 38.4960760 39.5689739 40.5028002 41.4256727 42.5188792 43.3195041 44.6465555 45.5153253 46.7172612 47.5475510 48.4290054
+##  [73] 49.5610726 50.4065902 51.3746367 52.5291446 53.4556708 54.5001105 55.5074341 56.4410479 57.4431331 58.4864821 59.6178087 60.3476433
+##  [85] 61.5593946 62.5332950 63.6063100 64.4695816 65.5370019 66.5267099 67.4457480 68.6207868 69.6160403 70.5700214 71.6586833 72.5558486
+##  [97] 73.3723408 74.4426735 75.3775387 76.4526599 77.4379633</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="a-loess-simító.html#cb11-1"></a><span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>))[<span class="kw">ceiling</span>(n<span class="op">*</span>span)]</span></code></pre></div>
+<pre><code>## [1] 52.52914</code></pre>
+<p>A másik eszköz, hogy még a megtartott pontokon belül is súlyozunk: minél távolabb esik egy pont a vizsgált értéktől annál kisebb lesz a súlya. Általában a trikubikus súlyfüggvényt használjuk:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="a-loess-simító.html#cb13-1"></a>tricube &lt;-<span class="st"> </span><span class="cf">function</span>(u, t) <span class="kw">ifelse</span>(u<span class="op">&lt;</span>t, (<span class="dv">1</span><span class="op">-</span>(u<span class="op">/</span>t)<span class="op">^</span><span class="dv">3</span>)<span class="op">^</span><span class="dv">3</span>, <span class="dv">0</span>)</span>
+<span id="cb13-2"><a href="a-loess-simító.html#cb13-2"></a><span class="kw">curve</span>(<span class="kw">tricube</span>(x, <span class="dv">2</span>), <span class="dt">to =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>(A fenti definícióval természetesen a kétféle lépés együtt van benne a <code>tricube</code> függvényben.)</p>
+<p>A felhasznált pontok:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="a-loess-simító.html#cb14-1"></a>SimData<span class="op">$</span>w &lt;-<span class="st"> </span><span class="kw">tricube</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>), <span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>))[<span class="kw">ceiling</span>(n<span class="op">*</span>span)])</span>
+<span id="cb14-2"><a href="a-loess-simító.html#cb14-2"></a><span class="kw">ggplot</span>(SimData, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs, <span class="dt">color =</span> w<span class="op">&gt;</span><span class="dv">0</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>A súlyozás:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="a-loess-simító.html#cb15-1"></a><span class="kw">ggplot</span>(SimData, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs, <span class="dt">color =</span> w)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="polinomiális-regresszió" class="section level2">
+<h2><span class="header-section-number">1.4</span> Polinomiális regresszió</h2>
+<p>A leszűkített és átsúlyozott ponthalmazra – ezt most tehát egyben tartalmazza a <code>w</code> – egy polinomális regressziót illesztünk.</p>
+<p>Legegyszerűbb esetben ez lineáris regresszió:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="a-loess-simító.html#cb16-1"></a>fit &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span>x, <span class="dt">weights =</span> w, <span class="dt">data =</span> SimData)</span>
+<span id="cb16-2"><a href="a-loess-simító.html#cb16-2"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">23.5</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb16-3"><a href="a-loess-simító.html#cb16-3"></a><span class="st">  </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="kw">coef</span>(fit)[<span class="dv">1</span>], <span class="dt">slope =</span> <span class="kw">coef</span>(fit)[<span class="dv">2</span>])</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Az illesztett regressziónak azt a pontját vesszük ki, ami a vizsgált érték volt! Az előbbi példát folytatva:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="a-loess-simító.html#cb17-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_abline</span>(<span class="dt">intercept =</span> <span class="kw">coef</span>(fit)[<span class="dv">1</span>], <span class="dt">slope =</span> <span class="kw">coef</span>(fit)[<span class="dv">2</span>]) <span class="op">+</span></span>
+<span id="cb17-2"><a href="a-loess-simító.html#cb17-2"></a><span class="st">  </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">23.5</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb17-3"><a href="a-loess-simító.html#cb17-3"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">x =</span> <span class="fl">23.5</span>, <span class="dt">y =</span> <span class="kw">predict</span>(fit, <span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="fl">23.5</span>)), <span class="dt">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>A dolgot automatizálhatjuk is:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="a-loess-simító.html#cb18-1"></a>loessfun &lt;-<span class="st"> </span><span class="cf">function</span>(xin, x, yobs, span) {</span>
+<span id="cb18-2"><a href="a-loess-simító.html#cb18-2"></a>  n &lt;-<span class="st"> </span><span class="kw">length</span>(x)</span>
+<span id="cb18-3"><a href="a-loess-simító.html#cb18-3"></a>  w &lt;-<span class="st"> </span><span class="kw">tricube</span>(<span class="kw">abs</span>(x<span class="op">-</span>xin), <span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="op">-</span>xin))[<span class="kw">ceiling</span>(n<span class="op">*</span>span)])</span>
+<span id="cb18-4"><a href="a-loess-simító.html#cb18-4"></a>  fit &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span>x, <span class="dt">weights =</span> w)</span>
+<span id="cb18-5"><a href="a-loess-simító.html#cb18-5"></a>  <span class="kw">predict</span>(fit, <span class="kw">data.frame</span>(<span class="dt">x =</span> xin))</span>
+<span id="cb18-6"><a href="a-loess-simító.html#cb18-6"></a>}</span>
+<span id="cb18-7"><a href="a-loess-simító.html#cb18-7"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">23.5</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb18-8"><a href="a-loess-simító.html#cb18-8"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">x =</span> <span class="fl">23.5</span>, <span class="dt">y =</span> <span class="kw">loessfun</span>(<span class="fl">23.5</span>, SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, <span class="fl">0.75</span>), <span class="dt">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ezt használva természetesen kényelmesen kiszámíthatjuk ezt bármely más értékre is:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="a-loess-simító.html#cb19-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">48.3</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb19-2"><a href="a-loess-simító.html#cb19-2"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">x =</span> <span class="fl">48.3</span>, <span class="dt">y =</span> <span class="kw">loessfun</span>(<span class="fl">48.3</span>, SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, <span class="fl">0.75</span>), <span class="dt">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="a-loess-simító.html#cb20-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">xintercept =</span> <span class="fl">91.2</span>, <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>) <span class="op">+</span></span>
+<span id="cb20-2"><a href="a-loess-simító.html#cb20-2"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">x =</span> <span class="fl">91.2</span>, <span class="dt">y =</span> <span class="kw">loessfun</span>(<span class="fl">91.2</span>, SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, <span class="fl">0.75</span>), <span class="dt">color=</span><span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="összerakva-az-építőelemeket-lokális-polinomiális-regressziókkal-közelítés" class="section level2">
+<h2><span class="header-section-number">1.5</span> Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés</h2>
+<p>Innen már értelemszerű a következő lépés, számítsuk ki ezeket a simított értékeket az <span class="math inline">\(x\)</span> releváns tartományának minden pontjára:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="a-loess-simító.html#cb21-1"></a>SmoothData &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">grid =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">101</span>, <span class="fl">0.1</span>))</span>
+<span id="cb21-2"><a href="a-loess-simító.html#cb21-2"></a>SmoothData<span class="op">$</span>value &lt;-<span class="st"> </span><span class="kw">apply</span>(SmoothData, <span class="dv">1</span>, <span class="cf">function</span>(x)</span>
+<span id="cb21-3"><a href="a-loess-simító.html#cb21-3"></a>  <span class="kw">loessfun</span>(x[<span class="st">&quot;grid&quot;</span>], SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, <span class="fl">0.75</span>))</span>
+<span id="cb21-4"><a href="a-loess-simító.html#cb21-4"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData, <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ez lesz a LOESS simítás!</p>
+<p>Min múlott az eredmény? Két paramétert használtunk: azt, hogy a pontok mekkora hányadát tartjuk meg, és azt, hogy hányadfokú polinomot illesztettünk. A fenti példában ezek <span class="math inline">\(\alpha=0,\!75\)</span> és <span class="math inline">\(p=1\)</span>. (Természetesen a súlyozófüggvény a harmadik paraméter, de azt most végig rögzítettnek fogjuk tekinteni.)</p>
+</div>
+<div id="a-paraméterek-megválasztásának-hatása-lokalitás" class="section level2">
+<h2><span class="header-section-number">1.6</span> A paraméterek megválasztásának hatása: lokalitás</h2>
+<p>Kézenfekvő a kérdés, hogy vajon a simításra hogyan hatnak ezek a paraméterek (annál is inkább, mert a fenti simítás nem néz ki túl bíztatóan!). Kezdjük a lokalitást szabályzó <span class="math inline">\(\alpha\)</span> paraméter hatásával:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="a-loess-simító.html#cb22-1"></a>SmoothData &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(<span class="dt">grid =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">101</span>, <span class="fl">0.1</span>),</span>
+<span id="cb22-2"><a href="a-loess-simító.html#cb22-2"></a>                          <span class="dt">span =</span> <span class="kw">c</span>(<span class="dv">2</span><span class="op">/</span>n<span class="fl">+1e-10</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="dv">1</span>))</span>
+<span id="cb22-3"><a href="a-loess-simító.html#cb22-3"></a>SmoothData<span class="op">$</span>value &lt;-<span class="st"> </span><span class="kw">apply</span>(SmoothData, <span class="dv">1</span>, <span class="cf">function</span>(x)</span>
+<span id="cb22-4"><a href="a-loess-simító.html#cb22-4"></a>  <span class="kw">loessfun</span>(x[<span class="st">&quot;grid&quot;</span>], SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, x[<span class="st">&quot;span&quot;</span>]))</span>
+<span id="cb22-5"><a href="a-loess-simító.html#cb22-5"></a>SmoothData<span class="op">$</span>span &lt;-<span class="st"> </span><span class="kw">as.factor</span>(SmoothData<span class="op">$</span>span)</span>
+<span id="cb22-6"><a href="a-loess-simító.html#cb22-6"></a></span>
+<span id="cb22-7"><a href="a-loess-simító.html#cb22-7"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData[SmoothData<span class="op">$</span>span<span class="op">%in%</span><span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>), ],</span>
+<span id="cb22-8"><a href="a-loess-simító.html#cb22-8"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value, <span class="dt">color =</span> span))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Még szemléletesebb, ha megnézzük a két szélső értéket is. Ha minden pontot figyelembe veszünk (nincs lokalitás):</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="a-loess-simító.html#cb23-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData[SmoothData<span class="op">$</span>span<span class="op">==</span><span class="dv">1</span>, ], <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value),</span>
+<span id="cb23-2"><a href="a-loess-simító.html#cb23-2"></a>              <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-18-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ha semennyi pontot nem veszünk figyelembe, a legközelebbi kettő kivételével értelemszerűen, hogy legyen mire illeszteni a görbét (teljes lokalitás):</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="a-loess-simító.html#cb24-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData[SmoothData<span class="op">$</span>span<span class="op">==</span><span class="dv">2</span><span class="op">/</span>n<span class="fl">+1e-10</span>, ], <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value),</span>
+<span id="cb24-2"><a href="a-loess-simító.html#cb24-2"></a>              <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Az első esetet szokták úgy hívni, hogy túlsimítás, a másodikat úgy, hogy alulsimítás. Vajon hogyan tudjuk a simítási paraméter (ennél a módszernél az <span class="math inline">\(\alpha\)</span>) értékét optimálisan megválasztani?</p>
+</div>
+<div id="a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma" class="section level2">
+<h2><span class="header-section-number">1.7</span> A paraméterek megválasztásának hatása: a polinom fokszáma</h2>
+<p>Mielőtt az előbbi kérdésre válaszolunk, meg kell nézni még egy kérdést, mert vissza fog hatni a válaszra: az illesztett polinom <span class="math inline">\(p\)</span> fokszámát. Vajon mi történik, ha lineáris regresszió helyett magasabb fokszámú polinomot használunk?</p>
+<div id="kitérő-polinomiális-regresszió-illesztésének-szintaktikája-r-alatt" class="section level3">
+<h3><span class="header-section-number">1.7.1</span> Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt</h3>
+<p>Érdemes kitérni arra a kérdésre, hogy a polinomiális regressziót hogyan kell R alatt specifikálni (az <code>lm</code>-nek megadni).</p>
+<p>A dolognak van ugyanis egy szintaktikai trükkje. Az ugyanis, ami a legkézenfekvőbbnek tűnne, nem működik:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="a-loess-simító.html#cb25-1"></a><span class="kw">lm</span>(y<span class="op">~</span>x<span class="op">+</span>x<span class="op">^</span><span class="dv">2</span>, <span class="dt">data =</span> SimData)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x + x^2, data = SimData)
+## 
+## Coefficients:
+## (Intercept)            x  
+##     0.96485     -0.01892</code></pre>
+<p>A probléma oka, hogy az <code>lm</code> formula interfészében a műveleti jelek speciálisan viselkednek. A <code>^</code> <em>nem</em> a hatványozás jele, hanem interakciót specifikál, azaz az <code>(x+y)^2</code> ugyanaz mint az <code>x+y+x:y</code>, viszont egy tagnál nincs mivel interakciót képezni, így az <code>x^2</code> ugyanaz lesz mint az <code>x</code>.</p>
+<p>A megoldást az <code>I()</code> függvény jelenti, ami azt mondja az R-nek, hogy a beleírt kifejezésben szereplő operátorokat a szokásos aritmetikai értelemmel értékelje ki:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="a-loess-simító.html#cb27-1"></a><span class="kw">lm</span>(y<span class="op">~</span>x<span class="op">+</span><span class="kw">I</span>(x<span class="op">^</span><span class="dv">2</span>), <span class="dt">data =</span> SimData)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x + I(x^2), data = SimData)
+## 
+## Coefficients:
+## (Intercept)            x       I(x^2)  
+##   1.014e+00   -2.178e-02    2.806e-05</code></pre>
+<p>Ez már működik, de eljárhatunk egyszerűbben is, a <code>poly</code> függvény ugyanis pont erre szolgál:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="a-loess-simító.html#cb29-1"></a><span class="kw">lm</span>(y<span class="op">~</span><span class="kw">poly</span>(x,<span class="dv">2</span>), <span class="dt">data =</span> SimData)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ poly(x, 2), data = SimData)
+## 
+## Coefficients:
+## (Intercept)  poly(x, 2)1  poly(x, 2)2  
+##  -0.0001279   -5.5423654    0.2142741</code></pre>
+<p>Látszólag mást kaptunk, de valójában csak a parametrizálásban van eltérés, a predikciók azonosak:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="a-loess-simító.html#cb31-1"></a><span class="kw">predict</span>(<span class="kw">lm</span>(y<span class="op">~</span>x<span class="op">+</span><span class="kw">I</span>(x<span class="op">^</span><span class="dv">2</span>)), <span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="fl">43.9</span>))</span></code></pre></div>
+<pre><code>##         1 
+## 0.1119441</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="a-loess-simító.html#cb33-1"></a><span class="kw">predict</span>(<span class="kw">lm</span>(y<span class="op">~</span><span class="kw">poly</span>(x,<span class="dv">2</span>)), <span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="fl">43.9</span>))</span></code></pre></div>
+<pre><code>##         1 
+## 0.1119441</code></pre>
+<p>A magyarázat, hogy a <code>poly</code> alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak, egymásra és a csupa <span class="math inline">\(1\)</span> vektorra nézve:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="a-loess-simító.html#cb35-1"></a><span class="kw">t</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>)))<span class="op">%*%</span><span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>))</span></code></pre></div>
+<pre><code>##                             1             2             3
+##    1.010000e+02  2.498002e-16  2.720046e-15 -2.775558e-17
+## 1  2.498002e-16  1.000000e+00 -2.706169e-16 -5.551115e-17
+## 2  2.720046e-15 -2.706169e-16  1.000000e+00 -1.457168e-16
+## 3 -2.775558e-17 -5.551115e-17 -1.457168e-16  1.000000e+00</code></pre>
+<p>Ha szeretnénk, ezt kikapcsolhatjuk, és akkor visszakapjuk a kézel létrehozott eredményt:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="a-loess-simító.html#cb37-1"></a><span class="kw">lm</span>(y<span class="op">~</span><span class="kw">poly</span>(x,<span class="dv">2</span>, <span class="dt">raw =</span> <span class="ot">TRUE</span>), <span class="dt">data =</span> SimData)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ poly(x, 2, raw = TRUE), data = SimData)
+## 
+## Coefficients:
+##             (Intercept)  poly(x, 2, raw = TRUE)1  poly(x, 2, raw = TRUE)2  
+##               1.014e+00               -2.178e-02                2.806e-05</code></pre>
+<p>Az alapértelmezett persze nem véletlenül az, ami: az ortogonális polinomok becslése sokkal jobb numerikus szempontból. Például a modellmátrix kondíciószámát nézve:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="a-loess-simító.html#cb39-1"></a><span class="kw">kappa</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>)), <span class="dt">exact =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 10.04988</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="a-loess-simító.html#cb41-1"></a><span class="kw">kappa</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>, <span class="dt">raw =</span> <span class="ot">TRUE</span>)), <span class="dt">exact =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 1651776</code></pre>
+<p>A <code>poly</code> használata nem csak elegánsabb és numerikusan szerencsésebb, de jóval kényelmesebb is (gondoljunk bele mi volna, ha véletlenül tizedfokú polinomot akarnánk specifikálni, vagy változó lenne, hogy hányadfokú polinomról van szó).</p>
+</div>
+<div id="polinom-fokszámának-változtatása" class="section level3">
+<h3><span class="header-section-number">1.7.2</span> Polinom fokszámának változtatása</h3>
+<p>Most már könnyedén megoldhatjuk, hogy a fokszám is változtatható legyen:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="a-loess-simító.html#cb43-1"></a>loessfun &lt;-<span class="st"> </span><span class="cf">function</span>(xin, x, yobs, span, degree) {</span>
+<span id="cb43-2"><a href="a-loess-simító.html#cb43-2"></a>  n &lt;-<span class="st"> </span><span class="kw">length</span>(x)</span>
+<span id="cb43-3"><a href="a-loess-simító.html#cb43-3"></a>  w &lt;-<span class="st"> </span><span class="kw">tricube</span>(<span class="kw">abs</span>(x<span class="op">-</span>xin), <span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="op">-</span>xin))[<span class="kw">ceiling</span>(n<span class="op">*</span>span)])</span>
+<span id="cb43-4"><a href="a-loess-simító.html#cb43-4"></a>  fit &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(x, degree), <span class="dt">weights =</span> w)</span>
+<span id="cb43-5"><a href="a-loess-simító.html#cb43-5"></a>  <span class="kw">predict</span>(fit, <span class="kw">data.frame</span>(<span class="dt">x =</span> xin))</span>
+<span id="cb43-6"><a href="a-loess-simító.html#cb43-6"></a>}</span></code></pre></div>
+<p>Ezt használva immár különböző fokszámokkal és simítási paraméterrel is próbálkozhatunk:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="a-loess-simító.html#cb44-1"></a>SmoothData &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">expand.grid</span>(<span class="dt">grid =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">101</span>, <span class="fl">0.1</span>),</span>
+<span id="cb44-2"><a href="a-loess-simító.html#cb44-2"></a>                                <span class="dt">span =</span> <span class="kw">c</span>(<span class="dv">2</span><span class="op">/</span>n<span class="fl">+1e-10</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="dv">1</span>), <span class="dt">degree =</span> <span class="dv">1</span>),</span>
+<span id="cb44-3"><a href="a-loess-simító.html#cb44-3"></a>                    <span class="kw">expand.grid</span>(<span class="dt">grid =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">101</span>, <span class="fl">0.1</span>),</span>
+<span id="cb44-4"><a href="a-loess-simító.html#cb44-4"></a>                                <span class="dt">span =</span> <span class="kw">c</span>(<span class="dv">3</span><span class="op">/</span>n<span class="fl">+1e-10</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="dv">1</span>), <span class="dt">degree =</span> <span class="dv">2</span>))</span>
+<span id="cb44-5"><a href="a-loess-simító.html#cb44-5"></a>SmoothData<span class="op">$</span>value &lt;-<span class="st"> </span><span class="kw">apply</span>(SmoothData, <span class="dv">1</span>, <span class="cf">function</span>(x)</span>
+<span id="cb44-6"><a href="a-loess-simító.html#cb44-6"></a>  <span class="kw">loessfun</span>(x[<span class="st">&quot;grid&quot;</span>], SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, x[<span class="st">&quot;span&quot;</span>], x[<span class="st">&quot;degree&quot;</span>]))</span>
+<span id="cb44-7"><a href="a-loess-simító.html#cb44-7"></a>SmoothData<span class="op">$</span>span &lt;-<span class="st"> </span><span class="kw">as.factor</span>(SmoothData<span class="op">$</span>span)</span>
+<span id="cb44-8"><a href="a-loess-simító.html#cb44-8"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData[SmoothData<span class="op">$</span>span<span class="op">%in%</span><span class="kw">c</span>(<span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>), ],</span>
+<span id="cb44-9"><a href="a-loess-simító.html#cb44-9"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value, <span class="dt">color =</span> span)) <span class="op">+</span><span class="st"> </span><span class="kw">facet_grid</span>(<span class="dt">rows =</span> <span class="kw">vars</span>(degree))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-28-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Egy nagyon fontos dolgot látunk: ha áttérünk a másodfokú polinom használatára, akkor gyakorlatilag a simítási paramétertől függetlenül szinte tökéletes simítást kapunk!</p>
+</div>
+</div>
+<div id="a-paraméterek-megválasztása" class="section level2">
+<h2><span class="header-section-number">1.8</span> A paraméterek megválasztása</h2>
+<p>Adja magát a kérdés, hogy a paramétereket hogyan választhatjuk meg egy valódi helyzetben (értsd: ahol mi sem tudjuk mi az igazi függvény).</p>
+<p>Itt most csak az érzékeltetés kedvéért mutatunk meg egy nagyon egyszerű módszert (megjegyezve, hogy ennél okosabban is el lehet járni, de ez is szemléltetni fogja, hogy a probléma kezelhető).</p>
+<p>Amit meg fogunk nézni az lényegében egy hold-out set validáció. A simitás jóságát azzal fogjuk mérni, hogy a simítógörbe és a pontok között mekkora a négyzetes eltérésösszeg. Ennek minimalizálása természetesen mindig alulsimított megoldást eredményezne, hiszen ez a célfüggvény nullába is vihető. Éppen ezért cselesebben járunk el: a pontokat véletlenszerűen két részre osztjuk, az egyik alapján határozzuk meg a simítógörbét (tanítóhalmaz), de a hibát a másik halmazon (teszthalmaz) mérjük le! Így ha elkezdünk túlsimítani, akkor a tanítóhalmazon ugyan csökken a hiba, de a teszthalmazon elkezd nőni. Azt a simítást választjuk tehát, ami a teszthalmazon mért hibát minimalizálja.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="a-loess-simító.html#cb45-1"></a>SimData<span class="op">$</span>train &lt;-<span class="st"> </span><span class="ot">FALSE</span></span>
+<span id="cb45-2"><a href="a-loess-simító.html#cb45-2"></a>SimData<span class="op">$</span>train[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">101</span>, <span class="dv">80</span>)] &lt;-<span class="st"> </span><span class="ot">TRUE</span></span>
+<span id="cb45-3"><a href="a-loess-simító.html#cb45-3"></a><span class="kw">ggplot</span>(SimData, <span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs, <span class="dt">color =</span> train)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb45-4"><a href="a-loess-simító.html#cb45-4"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">y =</span> y), <span class="dt">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="dt">lwd =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Nézzük meg hogyan alakul a hiba a simítási paraméter változtatásával, ha az összes pontra illesztünk (az egyszerűség kedvéért a fokszám legyen fixen 1):</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="a-loess-simító.html#cb46-1"></a>spans &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">0.03</span>, <span class="fl">0.99</span>, <span class="fl">0.01</span>)</span>
+<span id="cb46-2"><a href="a-loess-simító.html#cb46-2"></a>SSEfull &lt;-<span class="st"> </span><span class="kw">sapply</span>(spans, <span class="cf">function</span>(sp) <span class="kw">sum</span>((<span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">101</span>, <span class="cf">function</span>(i)</span>
+<span id="cb46-3"><a href="a-loess-simító.html#cb46-3"></a>  <span class="kw">loessfun</span>(SimData<span class="op">$</span>x[i], SimData<span class="op">$</span>x, SimData<span class="op">$</span>yobs, sp, <span class="dv">1</span>))<span class="op">-</span>yobs)<span class="op">^</span><span class="dv">2</span>))</span>
+<span id="cb46-4"><a href="a-loess-simító.html#cb46-4"></a><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(<span class="dt">span =</span> spans, <span class="dt">SSE =</span> SSEfull), <span class="kw">aes</span>(<span class="dt">x =</span> span, <span class="dt">y =</span> SSE)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>()</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Ahogy vártuk, a hiba folyamatosan csökken, az alulsimított megoldás tűnik a legjobbnak. (Jól látható, hogy az alulsimítás a túlilleszkedés analóg fogalma).</p>
+<p>Most vessük be a trükköt: csak a tanítóhalmazra illesztünk, miközben a teszthalmazon mérjük a hibát. Íme az eredmény:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="a-loess-simító.html#cb47-1"></a>SSEfull &lt;-<span class="st"> </span><span class="kw">sapply</span>(spans, <span class="cf">function</span>(sp) <span class="kw">sum</span>((<span class="kw">sapply</span>(<span class="kw">which</span>(<span class="op">!</span>SimData<span class="op">$</span>train), <span class="cf">function</span>(i)</span>
+<span id="cb47-2"><a href="a-loess-simító.html#cb47-2"></a>  <span class="kw">loessfun</span>(SimData<span class="op">$</span>x[i], SimData<span class="op">$</span>x[SimData<span class="op">$</span>train<span class="op">==</span><span class="ot">TRUE</span>],</span>
+<span id="cb47-3"><a href="a-loess-simító.html#cb47-3"></a>           SimData<span class="op">$</span>yobs[SimData<span class="op">$</span>train<span class="op">==</span><span class="ot">TRUE</span>], sp, <span class="dv">1</span>))<span class="op">-</span>yobs[SimData<span class="op">$</span>train<span class="op">==</span><span class="ot">FALSE</span>])<span class="op">^</span><span class="dv">2</span>))</span>
+<span id="cb47-4"><a href="a-loess-simító.html#cb47-4"></a><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(<span class="dt">span =</span> spans, <span class="dt">SSE =</span> SSEfull), <span class="kw">aes</span>(<span class="dt">x =</span> span, <span class="dt">y =</span> SSE)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>()</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-31-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Pontosan a várakozásainknak megfelelően így már szép, értelmes optimum van: mind a túl-, mind az alulsimítást észre tudjuk venni ezzel a validációval.</p>
+<p>Az optimális simítási paraméter értéke számszerűen is meghatározható:</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="a-loess-simító.html#cb48-1"></a>spans[<span class="kw">which.min</span>(SSEfull)]</span></code></pre></div>
+<pre><code>## [1] 0.21</code></pre>
+
+</div>
+</div>
+<!-- Default Statcounter code for Physcon Research
+http://research.physcon.uni-obuda.hu/ -->
+<script type="text/javascript">
+var sc_project=11601191; 
+var sc_invisible=1; 
+var sc_security="5a06c22d"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="ingyen
+webstatisztika" href="https://www.statcounter.hu/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/11601191/0/5a06c22d/1/"
+alt="ingyen webstatisztika"></a></div></noscript>
+<!-- End of Statcounter Code -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/tamas-ferenci/FerenciTamas_SmoothingSplinesGAM/edit/master/01-LOESS.Rmd",
+"text": "Szerkesztés"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["FerenciTamas_SmoothingSplinesGAM.pdf", "FerenciTamas_SmoothingSplinesGAM.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

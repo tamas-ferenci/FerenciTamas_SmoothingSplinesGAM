@@ -1,0 +1,297 @@
+# A LOESS simító
+
+```{block, type="handout"}
+A LOESS simítóról lesz szó
+```
+
+Ehhez az anyaghoz egyedül a `ggplot2` könyvtárra lesz szükségünk (illetve beállítjuk a véletlenszám-generátor seed-jét a reprodukálhatóság kedvéért):
+
+```{r}
+library(ggplot2)
+set.seed(1)
+```
+
+## Motiváció
+
+Első lépésben előkészítünk egy demonstrációs adatbázist. Szimulált adatokat fogunk használni (zajos szinusz), így mi is tudni fogjuk, hogy mi az "igazság", a valódi függvény amiből a pontok jöttek:
+
+```{r}
+n <- 101
+x <- (1:n) + rnorm(n, 0, 0.1)
+y <- sin(x/n*(2*pi))
+yobs <- y + rnorm(n, 0, 0.2)
+SimData <- data.frame(x, y, yobs)
+p <- ggplot(SimData, aes(x = x, y = yobs)) + geom_point() +
+  geom_line(aes(y = y), color = "orange", lwd = 1)
+p
+```
+
+Paraméteres görbeillesztésnél fel kell tételeznünk egy függvényformát (ti. ami a pontok mögött van a valóságban). Például, hogy lineáris:
+
+```{r}
+p + geom_smooth(formula = y~x, method = "lm", se = FALSE)
+```
+
+Ez az ábra jól mutatja ennek a fő problémáját: hogy ezt a feltételezést el is ronthatjuk! Természetesen vannak diagnosztikai eszközök ennek felderítésére, és ez alapján kereshetünk jobb függvényformát, de gyökerestül csak az oldja meg a problémát, ha olyan módszert találnánk, ami a nélkül működik, hogy egyáltalán fel kelljen tételeznie (bármilyen) függvényformát. Ezt oldják meg a simítási eljárások. (Lényegében nemparaméteres regresszióról van szó.)
+
+Annak az előnynek, hogy nem kell ilyen feltételezéssel élnünk (és így azt el sem ronthatjuk), természetesen ára van: kevésbé hatásosan becsülhető, mint a paraméteres illesztés, nincsenek számszerű paramétereink (aminek esetleg tárgyterületi interpretációt lehet adni), csak "ábrát tudunk rajzolni", és végezetül extrapoláció sem lehetséges, legalábbis nem triviálisan.
+
+## A LOESS simító alapgondolata
+
+Az egyik legnépszerűbb megoldás a LOESS (locally weighted scatterplot smoothing, néha LOWESS, vagy Savitzky–Golay szűrő), melynek alapgondolata, hogy végigmegy az $x$-változó releváns tartományán, és minden értékre meghatározza a pontfelhő ottani, tehát lokális közelítését, egy polinomális regresszióból. Utána az egész simítást ezekből a darabkákból építi fel.
+
+Legyen például a vizsgált érték a $23.5$:
+
+```{r}
+p + geom_vline(xintercept = 23.5, color = "red")
+```
+
+## Lokalitás
+
+A lokalitást két eszközzel érjük el. Az egyik, hogy nem használjuk az összes pontot, csak a vizsgált értékhez legközelebb eső $\alpha$ hányadát (ha ez nem egész lenne, akkor felső egészrészt veszünk); ezt a paramétert szokták `span`-nek nevezni. Például, ha ez 75%, akkor a távolság ameddig figyelembe vesszük a pontokat:
+
+```{r}
+span <- 0.75
+n*span
+ceiling(n*span)
+sort(abs(x-23.5))
+sort(abs(x-23.5))[ceiling(n*span)]
+```
+
+A másik eszköz, hogy még a megtartott pontokon belül is súlyozunk: minél távolabb esik egy pont a vizsgált értéktől annál kisebb lesz a súlya. Általában a trikubikus súlyfüggvényt használjuk:
+
+```{r}
+tricube <- function(u, t) ifelse(u<t, (1-(u/t)^3)^3, 0)
+curve(tricube(x, 2), to = 3)
+```
+
+(A fenti definícióval természetesen a kétféle lépés együtt van benne a `tricube` függvényben.)
+
+A felhasznált pontok:
+
+```{r}
+SimData$w <- tricube(abs(x-23.5), sort(abs(x-23.5))[ceiling(n*span)])
+ggplot(SimData, aes(x = x, y = yobs, color = w>0)) + geom_point()
+```
+
+A súlyozás:
+
+```{r}
+ggplot(SimData, aes(x = x, y = yobs, color = w)) + geom_point()
+```
+
+## Polinomiális regresszió
+
+A leszűkített és átsúlyozott ponthalmazra -- ezt most tehát egyben tartalmazza a `w` -- egy polinomális regressziót illesztünk.
+
+Legegyszerűbb esetben ez lineáris regresszió:
+
+```{r}
+fit <- lm(yobs ~ x, weights = w, data = SimData)
+p + geom_vline(xintercept = 23.5, color = "red") +
+  geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2])
+```
+
+Az illesztett regressziónak azt a pontját vesszük ki, ami a vizsgált érték volt! Az előbbi példát folytatva:
+
+```{r}
+p + geom_abline(intercept = coef(fit)[1], slope = coef(fit)[2]) +
+  geom_vline(xintercept = 23.5, color = "red") +
+  geom_point(x = 23.5, y = predict(fit, data.frame(x = 23.5)), color="red")
+```
+
+A dolgot automatizálhatjuk is:
+
+```{r}
+loessfun <- function(xin, x, yobs, span) {
+  n <- length(x)
+  w <- tricube(abs(x-xin), sort(abs(x-xin))[ceiling(n*span)])
+  fit <- lm(yobs ~ x, weights = w)
+  predict(fit, data.frame(x = xin))
+}
+p + geom_vline(xintercept = 23.5, color = "red") +
+  geom_point(x = 23.5, y = loessfun(23.5, SimData$x, SimData$yobs, 0.75), color="red")
+```
+
+Ezt használva természetesen kényelmesen kiszámíthatjuk ezt bármely más értékre is:
+
+```{r}
+p + geom_vline(xintercept = 48.3, color = "red") +
+  geom_point(x = 48.3, y = loessfun(48.3, SimData$x, SimData$yobs, 0.75), color="red")
+p + geom_vline(xintercept = 91.2, color = "red") +
+  geom_point(x = 91.2, y = loessfun(91.2, SimData$x, SimData$yobs, 0.75), color="red")
+```
+
+## Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés
+
+Innen már értelemszerű a következő lépés, számítsuk ki ezeket a simított értékeket az $x$ releváns tartományának minden pontjára:
+
+```{r}
+SmoothData <- expand.grid(grid = seq(0, 101, 0.1))
+SmoothData$value <- apply(SmoothData, 1, function(x)
+  loessfun(x["grid"], SimData$x, SimData$yobs, 0.75))
+p + geom_line(data = SmoothData, aes(x = grid, y = value), color = "red")
+```
+
+Ez lesz a LOESS simítás!
+
+Min múlott az eredmény? Két paramétert használtunk: azt, hogy a pontok mekkora hányadát tartjuk meg, és azt, hogy hányadfokú polinomot illesztettünk. A fenti példában ezek $\alpha=0,\!75$ és $p=1$. (Természetesen a súlyozófüggvény a harmadik paraméter, de azt most végig rögzítettnek fogjuk tekinteni.)
+
+## A paraméterek megválasztásának hatása: lokalitás
+
+Kézenfekvő a kérdés, hogy vajon a simításra hogyan hatnak ezek a paraméterek (annál is inkább, mert a fenti simítás nem néz ki túl bíztatóan!). Kezdjük a lokalitást szabályzó $\alpha$ paraméter hatásával:
+
+```{r}
+SmoothData <- expand.grid(grid = seq(0, 101, 0.1),
+                          span = c(2/n+1e-10, 0.25, 0.5, 0.75, 1))
+SmoothData$value <- apply(SmoothData, 1, function(x)
+  loessfun(x["grid"], SimData$x, SimData$yobs, x["span"]))
+SmoothData$span <- as.factor(SmoothData$span)
+
+p + geom_line(data = SmoothData[SmoothData$span%in%c(0.25, 0.5, 0.75), ],
+              aes(x = grid, y = value, color = span))
+```
+
+Még szemléletesebb, ha megnézzük a két szélső értéket is. Ha minden pontot figyelembe veszünk (nincs lokalitás):
+
+```{r}
+p + geom_line(data = SmoothData[SmoothData$span==1, ], aes(x = grid, y = value),
+              color = "red")
+```
+
+Ha semennyi pontot nem veszünk figyelembe, a legközelebbi kettő kivételével értelemszerűen, hogy legyen mire illeszteni a görbét (teljes lokalitás):
+
+```{r}
+p + geom_line(data = SmoothData[SmoothData$span==2/n+1e-10, ], aes(x = grid, y = value),
+              color = "red")
+```
+
+Az első esetet szokták úgy hívni, hogy túlsimítás, a másodikat úgy, hogy alulsimítás. Vajon hogyan tudjuk a simítási paraméter (ennél a módszernél az $\alpha$) értékét optimálisan megválasztani?
+
+## A paraméterek megválasztásának hatása: a polinom fokszáma
+
+Mielőtt az előbbi kérdésre válaszolunk, meg kell nézni még egy kérdést, mert vissza fog hatni a válaszra: az illesztett polinom $p$ fokszámát. Vajon mi történik, ha lineáris regresszió helyett magasabb fokszámú polinomot használunk?
+
+### Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt
+
+Érdemes kitérni arra a kérdésre, hogy a polinomiális regressziót hogyan kell R alatt specifikálni (az `lm`-nek megadni).
+
+A dolognak van ugyanis egy szintaktikai trükkje. Az ugyanis, ami a legkézenfekvőbbnek tűnne, nem működik:
+
+```{r}
+lm(y~x+x^2, data = SimData)
+```
+
+A probléma oka, hogy az `lm` formula interfészében a műveleti jelek speciálisan viselkednek. A `^` *nem* a hatványozás jele, hanem interakciót specifikál, azaz az `(x+y)^2` ugyanaz mint az `x+y+x:y`, viszont egy tagnál nincs mivel interakciót képezni, így az `x^2` ugyanaz lesz mint az `x`.
+
+A megoldást az `I()` függvény jelenti, ami azt mondja az R-nek, hogy a beleírt kifejezésben szereplő operátorokat a szokásos aritmetikai értelemmel értékelje ki:
+
+```{r}
+lm(y~x+I(x^2), data = SimData)
+```
+
+Ez már működik, de eljárhatunk egyszerűbben is, a `poly` függvény ugyanis pont erre szolgál:
+
+```{r}
+lm(y~poly(x,2), data = SimData)
+```
+
+Látszólag mást kaptunk, de valójában csak a parametrizálásban van eltérés, a predikciók azonosak:
+
+```{r}
+predict(lm(y~x+I(x^2)), data.frame(x = 43.9))
+predict(lm(y~poly(x,2)), data.frame(x = 43.9))
+```
+
+A magyarázat, hogy a `poly` alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak, egymásra és a csupa $1$ vektorra nézve:
+
+```{r}
+t(cbind(1, poly(x, 3)))%*%cbind(1, poly(x, 3))
+```
+
+Ha szeretnénk, ezt kikapcsolhatjuk, és akkor visszakapjuk a kézel létrehozott eredményt:
+
+```{r}
+lm(y~poly(x,2, raw = TRUE), data = SimData)
+```
+
+Az alapértelmezett persze nem véletlenül az, ami: az ortogonális polinomok becslése sokkal jobb numerikus szempontból. Például a modellmátrix kondíciószámát nézve:
+
+```{r}
+kappa(cbind(1, poly(x, 3)), exact = TRUE)
+kappa(cbind(1, poly(x, 3, raw = TRUE)), exact = TRUE)
+```
+
+A `poly` használata nem csak elegánsabb és numerikusan szerencsésebb, de jóval kényelmesebb is (gondoljunk bele mi volna, ha véletlenül tizedfokú polinomot akarnánk specifikálni, vagy változó lenne, hogy hányadfokú polinomról van szó).
+
+### Polinom fokszámának változtatása
+
+Most már könnyedén megoldhatjuk, hogy a fokszám is változtatható legyen:
+
+```{r}
+loessfun <- function(xin, x, yobs, span, degree) {
+  n <- length(x)
+  w <- tricube(abs(x-xin), sort(abs(x-xin))[ceiling(n*span)])
+  fit <- lm(yobs ~ poly(x, degree), weights = w)
+  predict(fit, data.frame(x = xin))
+}
+```
+
+Ezt használva immár különböző fokszámokkal és simítási paraméterrel is próbálkozhatunk:
+
+```{r}
+SmoothData <- rbind(expand.grid(grid = seq(0, 101, 0.1),
+                                span = c(2/n+1e-10, 0.25, 0.5, 0.75, 1), degree = 1),
+                    expand.grid(grid = seq(0, 101, 0.1),
+                                span = c(3/n+1e-10, 0.25, 0.5, 0.75, 1), degree = 2))
+SmoothData$value <- apply(SmoothData, 1, function(x)
+  loessfun(x["grid"], SimData$x, SimData$yobs, x["span"], x["degree"]))
+SmoothData$span <- as.factor(SmoothData$span)
+p + geom_line(data = SmoothData[SmoothData$span%in%c(0.25, 0.5, 0.75), ],
+              aes(x = grid, y = value, color = span)) + facet_grid(rows = vars(degree))
+```
+
+Egy nagyon fontos dolgot látunk: ha áttérünk a másodfokú polinom használatára, akkor gyakorlatilag a simítási paramétertől függetlenül szinte tökéletes simítást kapunk!
+
+## A paraméterek megválasztása
+
+Adja magát a kérdés, hogy a paramétereket hogyan választhatjuk meg egy valódi helyzetben (értsd: ahol mi sem tudjuk mi az igazi függvény).
+
+Itt most csak az érzékeltetés kedvéért mutatunk meg egy nagyon egyszerű módszert (megjegyezve, hogy ennél okosabban is el lehet járni, de ez is szemléltetni fogja, hogy a probléma kezelhető).
+
+Amit meg fogunk nézni az lényegében egy hold-out set validáció. A simitás jóságát azzal fogjuk mérni, hogy a simítógörbe és a pontok között mekkora a négyzetes eltérésösszeg. Ennek minimalizálása természetesen mindig alulsimított megoldást eredményezne, hiszen ez a célfüggvény nullába is vihető. Éppen ezért cselesebben járunk el: a pontokat véletlenszerűen két részre osztjuk, az egyik alapján határozzuk meg a simítógörbét (tanítóhalmaz), de a hibát a másik halmazon (teszthalmaz) mérjük le! Így ha elkezdünk túlsimítani, akkor a tanítóhalmazon ugyan csökken a hiba, de a teszthalmazon elkezd nőni. Azt a simítást választjuk tehát, ami a teszthalmazon mért hibát minimalizálja.
+
+```{r}
+SimData$train <- FALSE
+SimData$train[sample(1:101, 80)] <- TRUE
+ggplot(SimData, aes(x = x, y = yobs, color = train)) + geom_point() +
+  geom_line(aes(y = y), color = "orange", lwd = 1)
+```
+
+Nézzük meg hogyan alakul a hiba a simítási paraméter változtatásával, ha az összes pontra illesztünk (az egyszerűség kedvéért a fokszám legyen fixen 1):
+
+```{r}
+spans <- seq(0.03, 0.99, 0.01)
+SSEfull <- sapply(spans, function(sp) sum((sapply(1:101, function(i)
+  loessfun(SimData$x[i], SimData$x, SimData$yobs, sp, 1))-yobs)^2))
+ggplot(data.frame(span = spans, SSE = SSEfull), aes(x = span, y = SSE)) + geom_line()
+```
+
+Ahogy vártuk, a hiba folyamatosan csökken, az alulsimított megoldás tűnik a legjobbnak. (Jól látható, hogy az alulsimítás a túlilleszkedés analóg fogalma).
+
+Most vessük be a trükköt: csak a tanítóhalmazra illesztünk, miközben a teszthalmazon mérjük a hibát. Íme az eredmény:
+
+```{r}
+SSEfull <- sapply(spans, function(sp) sum((sapply(which(!SimData$train), function(i)
+  loessfun(SimData$x[i], SimData$x[SimData$train==TRUE],
+           SimData$yobs[SimData$train==TRUE], sp, 1))-yobs[SimData$train==FALSE])^2))
+ggplot(data.frame(span = spans, SSE = SSEfull), aes(x = span, y = SSE)) + geom_line()
+```
+
+Pontosan a várakozásainknak megfelelően így már szép, értelmes optimum van: mind a túl-, mind az alulsimítást észre tudjuk venni ezzel a validációval.
+
+Az optimális simítási paraméter értéke számszerűen is meghatározható:
+
+```{r}
+spans[which.min(SSEfull)]
+```

@@ -1,0 +1,43 @@
+--- 
+title: "Simítás, spline-regresszió, additív modellek"
+short-title: "Simítás, spline-regresszió, additív modellek"
+toc-title: "Tartalom"
+author: "Ferenci Tamás, \\href{mailto:tamas.ferenci@medstat.hu}{tamas.ferenci@medstat.hu}"
+date: '`r format(Sys.time(), "%Y\\. %B %e\\.")`'
+site: bookdown::bookdown_site
+documentclass: book
+link-citations: yes
+description: "Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik."
+lang: hu
+github-repo: tamas-ferenci/FerenciTamas_SmoothingSplinesGAM
+mainfont: XITS
+mathfont: XITS Math
+url: https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/
+cover-image: FerenciTamas_SmoothingSplinesGAM_cover.png
+---
+
+# Előszó {-}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.align="center")
+# knitr::opts_chunk$set(fig.align="center", out.width = "70%")
+# download.file(paste0("https://raw.githubusercontent.com/tamas-ferenci/FerenciTamas_SmoothingSplinesGAM/",
+#                      "master/FerenciTamas_SmoothingSplinesGAM_cover.png"),
+#               "./docs/FerenciTamas_SmoothingSplinesGAM_cover.png", mode = "wb")
+```
+
+```{block, type="handout"}
+Téma: simítás, spline-regresszió, additív modellek
+```
+
+Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik.
+
+Ajánlott irodalom: Simon N. Wood: Generalized Additive Models: an introduction with R (Chapman & Hall/CRC, Texts in Statistical Science sorozat, 2. kiadás, ISBN 9781498728331, 2017).
+
+```{block, type="handout"}
+Minden visszajelzést örömmel veszek a [tamas.ferenci@medstat.hu](tamas.ferenci@medstat.hu) email-címen
+```
+
+Az olvasó a kísérlet eredményét a jegyzet végére megítélheti. Én mindenesetre -- különösen azért, mert ez egy kísérlet -- minden visszajelzést, véleményt, kritikát a lehető legnagyobb örömmel veszek a [tamas.ferenci@medstat.hu](tamas.ferenci@medstat.hu) email-címen!
+
+A jegyzet weboldala (oktatási segédanyagokkal, technikai információkkal) a [https://github.com/tamas-ferenci/FerenciTamas_SmoothingSplinesGAM](https://github.com/tamas-ferenci/FerenciTamas_SmoothingSplinesGAM) címen érhető el.

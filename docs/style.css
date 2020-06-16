@@ -1,0 +1,33 @@
+p.caption {
+  color: #777;
+  margin-top: 10px;
+}
+p code {
+  white-space: inherit;
+}
+pre {
+  word-break: normal;
+  word-wrap: normal;
+}
+pre code {
+  white-space: inherit;
+}
+q {
+  quotes: '„' '”';
+}
+p {
+  text-align: justify;
+  width: 80%;
+  margin-left: 0;
+  margin-right: 20%;
+}
+li:not(.chapter) {
+  text-align: justify;
+  width: 80%;
+  margin-left: 0;
+  margin-right: 20%;
+}
+
+.handout {
+  display: none;
+}

@@ -1,0 +1,9 @@
+# Additív modellek
+
+## Több magyarázó változó
+
+```{block, type="handout"}
+Eddig egy magyarázó változó esetével foglalkoztunk
+```
+
+Eddig egy magyarázó változó esetével foglalkoztunk

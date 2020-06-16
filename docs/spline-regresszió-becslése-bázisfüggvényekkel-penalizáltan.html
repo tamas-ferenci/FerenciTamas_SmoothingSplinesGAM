@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="hu" xml:lang="hu">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 . fejezet Spline-regresszió becslése bázisfüggvényekkel, penalizáltan | Simítás, spline-regresszió, additív modellek</title>
+  <meta name="description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 . fejezet Spline-regresszió becslése bázisfüggvényekkel, penalizáltan | Simítás, spline-regresszió, additív modellek" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/" />
+  <meta property="og:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
+  <meta property="og:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="github-repo" content="tamas-ferenci/FerenciTamas_SmoothingSplinesGAM" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 . fejezet Spline-regresszió becslése bázisfüggvényekkel, penalizáltan | Simítás, spline-regresszió, additív modellek" />
+  
+  <meta name="twitter:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
+  <meta name="twitter:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
+
+<meta name="author" content="Ferenci Tamás," />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"/>
+<link rel="next" href="additív-modellek.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-19799395-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-19799395-2');
+</script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Ferenci Tamás: Simítás,<br>spline-regresszió, additív<br>modellek</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Előszó</a></li>
+<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a><ul>
+<li class="chapter" data-level="1.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#motiváció"><i class="fa fa-check"></i><b>1.1</b> Motiváció</a></li>
+<li class="chapter" data-level="1.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-loess-simító-alapgondolata"><i class="fa fa-check"></i><b>1.2</b> A LOESS simító alapgondolata</a></li>
+<li class="chapter" data-level="1.3" data-path="a-loess-simító.html"><a href="a-loess-simító.html#lokalitás"><i class="fa fa-check"></i><b>1.3</b> Lokalitás</a></li>
+<li class="chapter" data-level="1.4" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinomiális-regresszió"><i class="fa fa-check"></i><b>1.4</b> Polinomiális regresszió</a></li>
+<li class="chapter" data-level="1.5" data-path="a-loess-simító.html"><a href="a-loess-simító.html#összerakva-az-építőelemeket-lokális-polinomiális-regressziókkal-közelítés"><i class="fa fa-check"></i><b>1.5</b> Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés</a></li>
+<li class="chapter" data-level="1.6" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-lokalitás"><i class="fa fa-check"></i><b>1.6</b> A paraméterek megválasztásának hatása: lokalitás</a></li>
+<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a><ul>
+<li class="chapter" data-level="1.7.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#kitérő-polinomiális-regresszió-illesztésének-szintaktikája-r-alatt"><i class="fa fa-check"></i><b>1.7.1</b> Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt</a></li>
+<li class="chapter" data-level="1.7.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinom-fokszámának-változtatása"><i class="fa fa-check"></i><b>1.7.2</b> Polinom fokszámának változtatása</a></li>
+</ul></li>
+<li class="chapter" data-level="1.8" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztása"><i class="fa fa-check"></i><b>1.8</b> A paraméterek megválasztása</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a><ul>
+<li class="chapter" data-level="2.1" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-regresszió"><i class="fa fa-check"></i><b>2.1</b> A regresszió</a></li>
+<li class="chapter" data-level="2.2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-becslése-mintából"><i class="fa fa-check"></i><b>2.2</b> Regresszió becslése mintából</a></li>
+<li class="chapter" data-level="2.3" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#paraméteres-és-nem-paraméteres-regresszió"><i class="fa fa-check"></i><b>2.3</b> Paraméteres és nem-paraméteres regresszió</a></li>
+<li class="chapter" data-level="2.4" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-lineáris-regresszió-kibővítése-nemlinearitások"><i class="fa fa-check"></i><b>2.4</b> A lineáris regresszió kibővítése, nemlinearitások</a></li>
+<li class="chapter" data-level="2.5" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#egy-példa"><i class="fa fa-check"></i><b>2.5</b> Egy példa</a></li>
+<li class="chapter" data-level="2.6" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-ötödfokú-polinommal"><i class="fa fa-check"></i><b>2.6</b> Regresszió ötödfokú polinommal</a></li>
+<li class="chapter" data-level="2.7" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#módosítás"><i class="fa fa-check"></i><b>2.7</b> Módosítás</a></li>
+<li class="chapter" data-level="2.8" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-tizedfokú-polinommal"><i class="fa fa-check"></i><b>2.8</b> Regresszió tizedfokú polinommal</a></li>
+<li class="chapter" data-level="2.9" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-a-jelenség-oka"><i class="fa fa-check"></i><b>2.9</b> Mi a jelenség oka?</a></li>
+<li class="chapter" data-level="2.10" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-lehet-a-megoldás"><i class="fa fa-check"></i><b>2.10</b> Mi lehet a megoldás?</a></li>
+<li class="chapter" data-level="2.11" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#természetes-köbös-spline"><i class="fa fa-check"></i><b>2.11</b> Természetes köbös spline</a></li>
+<li class="chapter" data-level="2.12" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-példa-regressziója-természetes-köbös-spline-nal"><i class="fa fa-check"></i><b>2.12</b> A példa regressziója természetes köbös spline-nal</a></li>
+<li class="chapter" data-level="2.13" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-az-előbbiben-a-fantasztikus"><i class="fa fa-check"></i><b>2.13</b> Mi az előbbiben a fantasztikus?</a></li>
+<li class="chapter" data-level="2.14" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-spline-regresszió-ereje"><i class="fa fa-check"></i><b>2.14</b> A spline-regresszió ereje</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a><ul>
+<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hogyan-becsüljük-meg-a-spline-regressziót"><i class="fa fa-check"></i><b>3.1.1</b> Hogyan becsüljük meg a spline-regressziót?</a></li>
+<li class="chapter" data-level="3.1.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-tere-mint-függvénytér"><i class="fa fa-check"></i><b>3.1.2</b> Polinomok tere mint függvénytér</a></li>
+<li class="chapter" data-level="3.1.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-terének-bázisa"><i class="fa fa-check"></i><b>3.1.3</b> Polinomok terének bázisa</a></li>
+<li class="chapter" data-level="3.1.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-polinomok-terének-dimenziója"><i class="fa fa-check"></i><b>3.1.4</b> A polinomok terének dimenziója</a></li>
+<li class="chapter" data-level="3.1.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#spline-ok-függvénytere"><i class="fa fa-check"></i><b>3.1.5</b> Spline-ok függvénytere</a></li>
+<li class="chapter" data-level="3.1.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hány-dimenziós-a-spline-ok-tere"><i class="fa fa-check"></i><b>3.1.6</b> Hány dimenziós a spline-ok tere?</a></li>
+<li class="chapter" data-level="3.1.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#mik-a-spline-ok-bázisfüggvényei"><i class="fa fa-check"></i><b>3.1.7</b> Mik a spline-ok bázisfüggvényei?</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-használatának-ereje"><i class="fa fa-check"></i><b>3.2.1</b> A bázisfüggvények használatának ereje</a></li>
+<li class="chapter" data-level="3.2.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használata-másodfokú-polinomnál"><i class="fa fa-check"></i><b>3.2.2</b> Bázisfüggvények használata másodfokú polinomnál</a></li>
+<li class="chapter" data-level="3.2.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használatának-előnye"><i class="fa fa-check"></i><b>3.2.3</b> Bázisfüggvények használatának előnye</a></li>
+<li class="chapter" data-level="3.2.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-1.-felvonás"><i class="fa fa-check"></i><b>3.2.4</b> A bázisfüggvények ereje, 1. felvonás</a></li>
+<li class="chapter" data-level="3.2.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-2.-felvonás"><i class="fa fa-check"></i><b>3.2.5</b> A bázisfüggvények ereje, 2. felvonás</a></li>
+<li class="chapter" data-level="3.2.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt"><i class="fa fa-check"></i><b>3.2.6</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#dimenzió-meghatározása"><i class="fa fa-check"></i><b>3.3.1</b> Dimenzió meghatározása</a></li>
+<li class="chapter" data-level="3.3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítás-fokának-meghatározása"><i class="fa fa-check"></i><b>3.3.2</b> Simítás fokának meghatározása</a></li>
+<li class="chapter" data-level="3.3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizált-regresszió"><i class="fa fa-check"></i><b>3.3.3</b> Penalizált regresszió</a></li>
+<li class="chapter" data-level="3.3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simasági-büntetőtag-meghatározása"><i class="fa fa-check"></i><b>3.3.4</b> A simasági büntetőtag meghatározása</a></li>
+<li class="chapter" data-level="3.3.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-1"><i class="fa fa-check"></i><b>3.3.5</b> Megvalósítás <code>R</code> alatt</a></li>
+<li class="chapter" data-level="3.3.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-büntetőtag-beépítése-a-regressziós-célfüggvénybe"><i class="fa fa-check"></i><b>3.3.6</b> A simítási büntetőtag beépítése a regressziós célfüggvénybe</a></li>
+<li class="chapter" data-level="3.3.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#regresszió-megoldása-a-penalizálással"><i class="fa fa-check"></i><b>3.3.7</b> Regresszió megoldása a penalizálással</a></li>
+<li class="chapter" data-level="3.3.8" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-2"><i class="fa fa-check"></i><b>3.3.8</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a><ul>
+<li class="chapter" data-level="3.4.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4.1</b> A simítási paraméter meghatározása</a></li>
+<li class="chapter" data-level="3.4.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-ocv"><i class="fa fa-check"></i><b>3.4.2</b> Keresztvalidációs módszerek: OCV</a></li>
+<li class="chapter" data-level="3.4.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-gcv"><i class="fa fa-check"></i><b>3.4.3</b> Keresztvalidációs módszerek: GCV</a></li>
+<li class="chapter" data-level="3.4.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-3"><i class="fa fa-check"></i><b>3.4.4</b> Megvalósítás <code>R</code> alatt</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a><ul>
+<li class="chapter" data-level="4.1" data-path="additív-modellek.html"><a href="additív-modellek.html#több-magyarázó-változó"><i class="fa fa-check"></i><b>4.1</b> Több magyarázó változó</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="http://www.medstat.hu/" target="blank">http://www.medstat.hu/</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Simítás, spline-regresszió, additív modellek</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+\[
+  \DeclareMathOperator*{\argmin}{arg\,min}
+  \DeclareMathOperator*{\argmax}{arg\,max}
+  \newcommand{\dif}{\mathop{}\!\mathrm{d}}
+\]
+<div id="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan" class="section level1">
+<h1><span class="header-section-number">3 . fejezet</span> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</h1>
+<div id="bázisfüggvényekkel-felírás" class="section level2">
+<h2><span class="header-section-number">3.1</span> Bázisfüggvényekkel felírás</h2>
+<div id="hogyan-becsüljük-meg-a-spline-regressziót" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Hogyan becsüljük meg a spline-regressziót?</h3>
+<div class="handout">
+<p>
+Amiről nem beszéltünk eddig: ez mind szép, de hogyan tudunk ténylegesen is megbecsülni egy ilyen spline-regressziót?
+</p>
+<p>
+Ehhez visszalépünk pár lépést, és bevezetünk egy első kicsit absztraktnak tűnő, de később rendkívül jó szolgálatot tevő megközelítést
+</p>
+<p>
+Bár a célunk a spline-regresszió becslésének a megoldása, de a dolog – értelemszerűen – alkalmazható polinomiális regresszióra is (legfeljebb nincs sok értelme, mert az hagyományos módszerekkel is jól kézbentartható), úgyhogy először azon fogjuk illusztrálni
+</p>
+</div>
+<p>Amiről nem beszéltünk eddig: ez mind szép, de hogyan tudunk ténylegesen is megbecsülni egy ilyen spline-regressziót?</p>
+<p>Ehhez visszalépünk pár lépést, és bevezetünk egy első kicsit absztraktnak tűnő, de később rendkívül jó szolgálatot tevő megközelítést</p>
+<p>Bár a célunk a spline-regresszió becslésének a megoldása, de a dolog – értelemszerűen – alkalmazható polinomiális regresszióra is (legfeljebb nincs sok értelme, mert az hagyományos módszerekkel is jól kézbentartható), úgyhogy először azon fogjuk illusztrálni</p>
+</div>
+<div id="polinomok-tere-mint-függvénytér" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Polinomok tere mint függvénytér</h3>
+<div class="handout">
+<p>
+A másodfokú polinomok – mint függvények – összessége <strong>függvényteret</strong> alkot
+</p>
+<p>
+Ez egy olyan <em>vektortér</em>, aminek az elemei a függvények, a skalárok a valós számok, a két művelet pedig
+</p>
+<ul>
+<li>
+<p>
+Skalárral szorzás: <span class="math inline"><span class="math inline">\(\left(cf\right)\left(x\right)=cf\left(x\right)\)</span></span>
+</p>
+</li>
+<li>
+<p>
+Vektorok (azaz függvények) összeadása: <span class="math inline"><span class="math inline">\(\left(f+g\right)\left(x\right)=f\left(x\right)+g\left(x\right)\)</span></span>, tehát pontonkénti összeadás
+</p>
+</li>
+</ul>
+<p>
+Belátható, hogy ez teljesíti a vektortéraxiómákat, mert zárt a két műveletre (másodfokú polinomok összege másodfokú polinom és másodfokú polinom konstansszorosa másodfokú polinom), és a többi követelményt is teljesíti
+</p>
+</div>
+<p>A másodfokú polinomok – mint függvények – összessége <strong>függvényteret</strong> alkot</p>
+<p>Ez egy olyan <em>vektortér</em>, aminek az elemei a függvények, a skalárok a valós számok, a két művelet pedig</p>
+<ul>
+<li><p>Skalárral szorzás: <span class="math inline">\(\left(cf\right)\left(x\right)=cf\left(x\right)\)</span></p></li>
+<li><p>Vektorok (azaz függvények) összeadása: <span class="math inline">\(\left(f+g\right)\left(x\right)=f\left(x\right)+g\left(x\right)\)</span>, tehát pontonkénti összeadás</p></li>
+</ul>
+<p>Belátható, hogy ez teljesíti a vektortéraxiómákat, mert zárt a két műveletre (másodfokú polinomok összege másodfokú polinom és másodfokú polinom konstansszorosa másodfokú polinom), illetve az összeadásra nézve kommutatív csoport, a szorzás és az összeadás mindkét irányból disztributív, van egységelem szorzásra nézve és a skalárszorzás valamint a valós számok szorzása kompatibilis</p>
+</div>
+<div id="polinomok-terének-bázisa" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Polinomok terének bázisa</h3>
+<div class="handout">
+<p>
+Szuper, de mindez mire jó?
+</p>
+<p>
+Ha vektortér, akkor létezik <strong>bázisa</strong>, azaz olyan vektorok halmaza, melyekből lineáris kombinációval minden vektor – egyértelműen – előállítható (bázis: lineárisan független generátorrendszer)
+</p>
+<p>
+A bázis nem feltétlenül egyértelmű, de az elemszáma igen, ez a vektortér <strong>dimenziója</strong>
+</p>
+<p>
+Például a másodfokú polinomok jó bázisa <span class="math inline"><span class="math inline">\(\left\{1,x,x^2\right\}\)</span></span>, nyilvánvaló, hogy ebből tényleg minden <span class="math inline"><span class="math inline">\(ax^2+bx+c\)</span></span> másodfokú polinom előállítható lineáris kombinációval (triviálisan, a súlyok <span class="math inline"><span class="math inline">\(c\)</span></span>, <span class="math inline"><span class="math inline">\(b\)</span></span> és <span class="math inline"><span class="math inline">\(a\)</span></span>)
+</p>
+<p>
+Függvényterek esetében a bázis elemeit <strong>bázisfüggvényeknek</strong> is szokás nevezni, az <span class="math inline"><span class="math inline">\(\left\{1,x,x^2\right\}\)</span></span> tehát a másodfokú polinomok bázisfüggvényei
+</p>
+</div>
+<p>Szuper, de mindez mire jó?</p>
+<p>Ha vektortér, akkor létezik <strong>bázisa</strong>, azaz olyan vektorok halmaza, melyekből lineáris kombinációval minden vektor – egyértelműen – előállítható (bázis: lineárisan független generátorrendszer)</p>
+<p>A bázis nem feltétlenül egyértelmű, de az elemszáma igen, ez a vektortér <strong>dimenziója</strong></p>
+<p>Például a másodfokú polinomok jó bázisa <span class="math inline">\(\left\{1,x,x^2\right\}\)</span>, nyilvánvaló, hogy ebből tényleg minden <span class="math inline">\(ax^2+bx+c\)</span> másodfokú polinom előállítható lineáris kombinációval (triviálisan, a súlyok <span class="math inline">\(c\)</span>, <span class="math inline">\(b\)</span> és <span class="math inline">\(a\)</span>)</p>
+<p>Függvényterek esetében a bázis elemeit <strong>bázisfüggvényeknek</strong> is szokás nevezni, az <span class="math inline">\(\left\{1,x,x^2\right\}\)</span> tehát a másodfokú polinomok bázisfüggvényei</p>
+</div>
+<div id="a-polinomok-terének-dimenziója" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> A polinomok terének dimenziója</h3>
+<div class="handout">
+<p>
+Mivel mutattunk egy konkrét bázist, így a dimenzió nyilván 3, de a későbbiek szempontjából jól jön egy másik módszer is
+</p>
+<p>
+Azzal, hogy az <span class="math inline"><span class="math inline">\(ax^2+bx+c\)</span></span> polinomot megfeleltettük az <span class="math inline"><span class="math inline">\(\left(a,b,c\right)\)</span></span> valós számhármasnak, a polinomok tere és a valós számhármasok tere (az <span class="math inline"><span class="math inline">\(\mathbb{R}^3\)</span></span>) között létesítettünk egy izomorfizmust (a leképezés művelettartó és kölcsönösen egyértelmű)
+</p>
+<p>
+Emiatt a polinomok terének ugyanaz a dimenziója, mint az <span class="math inline"><span class="math inline">\(\mathbb{R}^3\)</span></span>-nak, ami viszont természetesen 3
+</p>
+<p>
+Ez a módszer általában is használható: a dimenzió a felíráshoz szükséges paraméterek száma (feltéve, hogy ezek valós számok, valamint mindegyikhez tartozik egy polinom és viszont)
+</p>
+</div>
+<p>Mivel mutattunk egy konkrét bázist, így a dimenzió nyilván 3, de a későbbiek szempontjából jól jön egy másik módszer is</p>
+<p>Azzal, hogy az <span class="math inline">\(ax^2+bx+c\)</span> polinomot megfeleltettük az <span class="math inline">\(\left(a,b,c\right)\)</span> valós számhármasnak, a polinomok tere és a valós számhármasok tere (az <span class="math inline">\(\mathbb{R}^3\)</span>) között létesítettünk egy izomorfizmust (a leképezés művelettartó és kölcsönösen egyértelmű)</p>
+<p>Emiatt a polinomok terének ugyanaz a dimenziója, mint az <span class="math inline">\(\mathbb{R}^3\)</span>-nak, ami viszont természetesen 3</p>
+<p>Ez a módszer általában is használható: a dimenzió a felíráshoz szükséges paraméterek száma (feltéve, hogy ezek valós számok, valamint mindegyikhez tartozik egy polinom és viszont)</p>
+</div>
+<div id="spline-ok-függvénytere" class="section level3">
+<h3><span class="header-section-number">3.1.5</span> Spline-ok függvénytere</h3>
+<div class="handout">
+<p>
+Mindez a spline-okra is igaz!
+</p>
+<p>
+Érthető: minden pontban két polinomot adunk össze, vagy polinomot szorzunk skalárral, az eredmény polinom (már láttuk) – így tud spline adott pontja lenni!
+</p>
+<p>
+Azaz: spline-okat is elő tudunk állítani bázisfüggvények lineáris kombinációjaként!
+</p>
+</div>
+<p>Mindez a spline-okra is igaz!</p>
+<p>Érthető: minden pontban két polinomot adunk össze, vagy polinomot szorzunk skalárral, az eredmény polinom (már láttuk) – így tud spline adott pontja lenni!</p>
+<p>Azaz: spline-okat is elő tudunk állítani bázisfüggvények lineáris kombinációjaként!</p>
+</div>
+<div id="hány-dimenziós-a-spline-ok-tere" class="section level3">
+<h3><span class="header-section-number">3.1.6</span> Hány dimenziós a spline-ok tere?</h3>
+<div class="handout">
+<p>
+Mielőtt megkeressük a spline-ok terének egy bázisát (azaz a konkrét bázisfüggvényeket), tisztázni kellene, hogy hány bázisfüggvényt keresünk egyáltalán, azaz hány dimenziós a spline-ok függvénytere
+</p>
+<p>
+Naiv ötlet (köbös spline-okat használva példaként): van <span class="math inline"><span class="math inline">\(q-1\)</span></span> szakasz (<span class="math inline"><span class="math inline">\(q-2\)</span></span> knot, ami meghatároz <span class="math inline"><span class="math inline">\(q-3\)</span></span> szakaszt meg a két vége; úgy is felfogható, hogy a két végével együtt <span class="math inline"><span class="math inline">\(q\)</span></span> knot van, ami meghatároz <span class="math inline"><span class="math inline">\(q-1\)</span></span> szakaszt) és mindegyiken egy harmadfokú polinom (aminek 4 paramétere van), akkor az <span class="math inline"><span class="math inline">\(4q-4\)</span></span> paraméter
+</p>
+<p>
+Igen ám, de vannak megkötések: a knotokban a függvényérték és az első két derivált egyezik
+</p>
+<p>
+Minden megkötés minden pontban 1 egyenlet, az 1-gyel csökkenti a paraméterek számát: van <span class="math inline"><span class="math inline">\(q-2\)</span></span> knot és 3 megkötés, az <span class="math inline"><span class="math inline">\(3q-6\)</span></span> csökkentés, marad <span class="math inline"><span class="math inline">\(q+2\)</span></span> paraméter
+</p>
+<p>
+De mivel természetes, így a végpontokban is van 1-1 megkötés: marad <span class="math inline"><span class="math inline">\(q\)</span></span> paraméter, azaz <span class="math inline"><span class="math inline">\(q\)</span></span> dimenziós a természetes köbös spline-ok tere (ezért neveztük a knot-ok számát <span class="math inline"><span class="math inline">\(q-2\)</span></span>-nek!)
+</p>
+</div>
+<p>Mielőtt megkeressük a spline-ok terének egy bázisát (azaz a konkrét bázisfüggvényeket), tisztázni kellene, hogy hány bázisfüggvényt keresünk egyáltalán, azaz hány dimenziós a spline-ok függvénytere</p>
+<p>Naiv ötlet (köbös spline-okat használva példaként): van <span class="math inline">\(q-1\)</span> szakasz (<span class="math inline">\(q-2\)</span> knot, ami meghatároz <span class="math inline">\(q-3\)</span> szakaszt meg a két vége; úgy is felfogható, hogy a két végével együtt <span class="math inline">\(q\)</span> knot van, ami meghatároz <span class="math inline">\(q-1\)</span> szakaszt) és mindegyiken egy harmadfokú polinom (aminek 4 paramétere van), akkor az <span class="math inline">\(4q-4\)</span> paraméter</p>
+<p>Igen ám, de vannak megkötések: a knotokban a függvényérték és az első két derivált egyezik</p>
+<p>Minden megkötés minden pontban 1 egyenlet, az 1-gyel csökkenti a paraméterek számát: van <span class="math inline">\(q-2\)</span> knot és 3 megkötés, az <span class="math inline">\(3q-6\)</span> csökkentés, marad <span class="math inline">\(q+2\)</span> paraméter</p>
+<p>De mivel természetes, így a végpontokban is van 1-1 megkötés: marad <span class="math inline">\(q\)</span> paraméter, azaz <span class="math inline">\(q\)</span> dimenziós a természetes köbös spline-ok tere (ezért neveztük a knot-ok számát <span class="math inline">\(q-2\)</span>-nek!)</p>
+</div>
+<div id="mik-a-spline-ok-bázisfüggvényei" class="section level3">
+<h3><span class="header-section-number">3.1.7</span> Mik a spline-ok bázisfüggvényei?</h3>
+<div class="handout">
+<p>
+Természetesen itt is igaz, hogy adott, rögzített spline-osztályra (pl. természetes köbös) is végtelen sok bázis van
+</p>
+<p>
+Köztük célszerűség alapján választhatunk
+</p>
+<p>
+A részletek nélkül két példa:
+</p>
+<ul>
+<li>
+<p>
+<span class="math inline"><span class="math inline">\(b_1\left(x\right)=1, b_2\left(x\right)=x, b_i\left(x\right)=\left|x-x_{i-2}^{\ast}\right|^3 (i=3,4,\ldots,q)\)</span></span>
+</p>
+</li>
+<li>
+<p>
+<span class="math inline"><span class="math inline">\(b_1\left(x\right)=1, b_2\left(x\right)=x, b_i\left(x\right)=R\left(x,x_{i-2}^{\ast}\right) (i=3,4,\ldots,q)\)</span></span>, ahol <span class="math inline"><span class="math inline">\(R\)</span></span> egy nevezetes – elég hosszú, bár nem túl bonyolult – függvény (hamar látni fogjuk, hogy ez miért előnyös), annyi fontos, hogy <span class="math inline"><span class="math inline">\(x\)</span></span> a <span class="math inline"><span class="math inline">\(\left[0,1\right]\)</span></span> intervallumban essen (egyszerű átskálázssal mindig elérhető)
+</p>
+</li>
+</ul>
+<p>
+Most már csak a regresszió kivitelezését kell kitalálnunk
+</p>
+</div>
+<p>Természetesen itt is igaz, hogy adott, rögzített spline-osztályra (pl. természetes köbös) is végtelen sok bázis van</p>
+<p>Köztük célszerűség alapján választhatunk</p>
+<p>A részletek nélkül két példa:</p>
+<ul>
+<li><p><span class="math inline">\(b_1\left(x\right)=1, b_2\left(x\right)=x, b_i\left(x\right)=\left|x-x_{i-2}^{\ast}\right|^3 (i=3,4,\ldots,q)\)</span></p></li>
+<li><p><span class="math inline">\(b_1\left(x\right)=1, b_2\left(x\right)=x, b_i\left(x\right)=R\left(x,x_{i-2}^{\ast}\right) (i=3,4,\ldots,q)\)</span>, ahol <span class="math inline">\(R\)</span> egy nevezetes – elég hosszú, bár nem túl bonyolult – függvény (hamar látni fogjuk, hogy ez miért előnyös), annyi fontos, hogy <span class="math inline">\(x\)</span> a <span class="math inline">\(\left[0,1\right]\)</span> intervallumban essen (egyszerű átskálázással mindig elérhető)</p></li>
+</ul>
+<p>Most már csak a regresszió kivitelezését kell kitalálnunk</p>
+</div>
+</div>
+<div id="modellmátrix-előállítása" class="section level2">
+<h2><span class="header-section-number">3.2</span> Modellmátrix előállítása</h2>
+<div id="a-bázisfüggvények-használatának-ereje" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> A bázisfüggvények használatának ereje</h3>
+<div class="handout">
+<p>
+A bázisfüggvények használatának két hatalmas előnye van:
+</p>
+<ul>
+<li>
+<p>
+A probléma visszavezethető velük a sima lineáris regresszióra
+</p>
+</li>
+<li>
+<p>
+Sőt, ehhez a modellmátrix is könnyen előállítható
+</p>
+</li>
+</ul>
+</div>
+<p>A bázisfüggvények használatának két hatalmas előnye van:</p>
+<ul>
+<li><p>A probléma visszavezethető velük a sima lineáris regresszióra</p></li>
+<li><p>Sőt, ehhez a modellmátrix is könnyen előállítható</p></li>
+</ul>
+</div>
+<div id="bázisfüggvények-használata-másodfokú-polinomnál" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Bázisfüggvények használata másodfokú polinomnál</h3>
+<div class="handout">
+<p>
+Legyen <span class="math inline"><span class="math inline">\(b_1\left(x\right)=1\)</span></span>, <span class="math inline"><span class="math inline">\(b_2\left(x\right)=x\)</span></span> és <span class="math inline"><span class="math inline">\(b_3\left(x\right)=x^2\)</span></span> a bázisunk
+</p>
+<p>
+Az eredeti regresszió: <span class="math display"><span class="math display">\[
+y_i = \beta_1 + \beta_2 x_i + \beta_3 x_i^2 + \varepsilon_i
+\]</span></span>
+</p>
+<p>
+Átírva bázisokra (lényegében transzformált magyarázó változók): <span class="math display"><span class="math display">\[
+y_i = \beta_1 b_1\left(x_i\right) + \beta_2 b_2\left(x_i\right) + \beta_3 b_3\left(x_i\right) + \varepsilon_i
+\]</span></span>
+</p>
+<p>
+Ez már tiszta lineáris regresszió
+</p>
+</div>
+<p>Legyen <span class="math inline">\(b_1\left(x\right)=1\)</span>, <span class="math inline">\(b_2\left(x\right)=x\)</span> és <span class="math inline">\(b_3\left(x\right)=x^2\)</span> a bázisunk</p>
+<p>Az eredeti regresszió:
+<span class="math display">\[
+y_i = \beta_1 + \beta_2 x_i + \beta_3 x_i^2 + \varepsilon_i
+\]</span></p>
+<p>Átírva bázisokra (lényegében transzformált magyarázó változók):
+<span class="math display">\[
+y_i = \beta_1 b_1\left(x_i\right) + \beta_2 b_2\left(x_i\right) + \beta_3 b_3\left(x_i\right) + \varepsilon_i
+\]</span></p>
+<p>Ez már tiszta lineáris regresszió</p>
+</div>
+<div id="bázisfüggvények-használatának-előnye" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Bázisfüggvények használatának előnye</h3>
+<div class="handout">
+<p>
+Ez úgy tűnik, hogy csak egy nagyon nyakatekert felírás egy amúgy egyszerű problémára
+</p>
+<p>
+Valójában viszont egy elképesztően erőteljes dolgot nyertünk: <em>minden</em> olyan függvény, legyen bármilyen komplikált is, ami felírható bázisfüggvényekkel (azaz az osztálya függvényosztályt alkot), az berakható egy <em>kutyaközönséges</em> regresszióba (azaz lehet ő a regrssziós függvény) a fenti transzformációval, tehát <span class="math display"><span class="math display">\[
+    \sum_{i=1}^q \beta_i b_i\left(x\right)
+\]</span></span> alakban
+</p>
+<p>
+(Azaz minden függvény, ami egy függvénytér eleme)
+</p>
+</div>
+<p>Ez úgy tűnik, hogy csak egy nagyon nyakatekert felírás egy amúgy egyszerű problémára</p>
+<p>Valójában viszont egy elképesztően erőteljes dolgot nyertünk: <em>minden</em> olyan függvény, legyen bármilyen komplikált is, ami felírható bázisfüggvényekkel (azaz az osztálya függvényosztályt alkot), az berakható egy <em>kutyaközönséges</em> regresszióba (azaz lehet ő a regrssziós függvény) a fenti transzformációval, tehát
+<span class="math display">\[
+    \sum_{i=1}^q \beta_i b_i\left(x\right)
+\]</span>
+alakban</p>
+<p>(Azaz minden függvény, ami egy függvénytér eleme)</p>
+</div>
+<div id="a-bázisfüggvények-ereje-1.-felvonás" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> A bázisfüggvények ereje, 1. felvonás</h3>
+<div class="handout">
+<p>
+Még egyszer: <em>minden</em> függvény, ami felírható bázisfüggvényekkel
+</p>
+<p>
+Azaz: <em>minden</em>
+</p>
+<p>
+…és az összesnek <em>pontosan ugyanúgy</em> az lesz az alakja, hogy <span class="math display"><span class="math display">\[
+\sum_{i=1}^q \beta_i b_i\left(x\right),
+\]</span></span> egyedül a bázisfüggvényt kell az adott esetnek megfelelően megválasztani
+</p>
+<p>
+Tehát a spline is mehet ugyanígy (csak megfelelő <span class="math inline"><span class="math inline">\(b_i\)</span></span>-kkel)!
+</p>
+<p>
+És ha ez az alak megvan, akkor onnantól természetesen <em>sima lineáris regresszióval</em> elintézhető
+</p>
+</div>
+<p>Még egyszer: <em>minden</em> függvény, ami felírható bázisfüggvényekkel</p>
+<p>Azaz: <em>minden</em></p>
+<p>…és az összesnek <em>pontosan ugyanúgy</em> az lesz az alakja, hogy
+<span class="math display">\[
+\sum_{i=1}^q \beta_i b_i\left(x\right),
+\]</span>
+egyedül a bázisfüggvényt kell az adott esetnek megfelelően megválasztani</p>
+<p>Tehát a spline is mehet ugyanígy (csak megfelelő <span class="math inline">\(b_i\)</span>-kkel)!</p>
+<p>És ha ez az alak megvan, akkor onnantól természetesen <em>sima lineáris regresszióval</em> elintézhető</p>
+</div>
+<div id="a-bázisfüggvények-ereje-2.-felvonás" class="section level3">
+<h3><span class="header-section-number">3.2.5</span> A bázisfüggvények ereje, 2. felvonás</h3>
+<div class="handout">
+<p>
+Ráadásul az <span class="math inline"><span class="math inline">\(\mathbf{X}\)</span></span> modellmátrix (design mátrix) előállítása is nagyon könnyű lesz: az <span class="math inline"><span class="math inline">\(i\)</span></span>-edik sora <span class="math display"><span class="math display">\[
+\left[ b_1\left(x_i\right), b_2\left(x_i\right), \ldots, b_q\left(x_i\right) \right]
+\]</span></span>
+</p>
+<p>
+Így maga a mátrix az <span class="math inline"><span class="math inline">\(\mathbf{x}\)</span></span> és az <span class="math inline"><span class="math inline">\(\left[1,2,\ldots,q\right]\)</span></span> vektor <em>külső szorzata</em> (tenzorszorzata), ha a művelet alatt az oszlopban szereplő érték által meghatározott bázisfüggvény sorbeli elemre történő alkalmazását értjük, tehát <span class="math inline"><span class="math inline">\(i\otimes j:=b_j\left(x_i\right)\)</span></span>, és így <span class="math display"><span class="math display">\[
+\begin{aligned}
+&amp;amp; \begin{pmatrix} \quad 1 &amp;amp; \qquad \enspace 2 &amp;amp; \quad \; \cdots &amp;amp; \quad q\quad \; \end{pmatrix} \\
+\begin{pmatrix}x_1\\x_2\\ \vdots \\ x_n\end{pmatrix} &amp;amp; \begin{bmatrix}b_1\left(x_1\right) &amp;amp; b_2\left(x_1\right) &amp;amp; \cdots &amp;amp; b_q\left(x_1\right) \\ b_1\left(x_2\right) &amp;amp; b_2\left(x_2\right) &amp;amp; \cdots &amp;amp; b_q\left(x_2\right) \\ \vdots &amp;amp; \vdots &amp;amp; \ddots &amp;amp; \vdots \\ b_1\left(x_n\right) &amp;amp; b_2\left(x_n\right) &amp;amp; \cdots &amp;amp; b_q\left(x_n\right) \end{bmatrix}
+\end{aligned}
+\]</span></span>
+</p>
+<p>
+Így, a teljes modellmátrix egy lépésben megkapható…
+</p>
+<p>
+… majd közvetlenül rakható is bele a sima lineáris regresszióba (ld. 1. előny): <span class="math display"><span class="math display">\[
+\widehat{\boldsymbol{\beta}}=\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\mathbf{X}^T\mathbf{y}
+\]</span></span>
+</p>
+</div>
+<p>Ráadásul az <span class="math inline">\(\mathbf{X}\)</span> modellmátrix (design mátrix) előállítása is nagyon könnyű lesz: az <span class="math inline">\(i\)</span>-edik sora
+<span class="math display">\[
+\left[ b_1\left(x_i\right), b_2\left(x_i\right), \ldots, b_q\left(x_i\right) \right]
+\]</span></p>
+<p>Így maga a mátrix az <span class="math inline">\(\mathbf{x}\)</span> és az <span class="math inline">\(\left[1,2,\ldots,q\right]\)</span> vektor <em>külső szorzata</em> (tenzorszorzata), ha a művelet alatt az oszlopban szereplő érték által meghatározott bázisfüggvény sorbeli elemre történő alkalmazását értjük, tehát <span class="math inline">\(i\otimes j:=b_j\left(x_i\right)\)</span>, és így
+<span class="math display">\[
+\begin{aligned}
+&amp; \begin{pmatrix} \quad 1 &amp; \qquad \enspace 2 &amp; \quad \; \cdots &amp; \quad q\quad \; \end{pmatrix} \\
+\begin{pmatrix}x_1\\x_2\\ \vdots \\ x_n\end{pmatrix} &amp; \begin{bmatrix}b_1\left(x_1\right) &amp; b_2\left(x_1\right) &amp; \cdots &amp; b_q\left(x_1\right) \\ b_1\left(x_2\right) &amp; b_2\left(x_2\right) &amp; \cdots &amp; b_q\left(x_2\right) \\ \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ b_1\left(x_n\right) &amp; b_2\left(x_n\right) &amp; \cdots &amp; b_q\left(x_n\right) \end{bmatrix}
+\end{aligned}
+\]</span></p>
+<p>Így, a teljes modellmátrix egy lépésben megkapható…</p>
+<p>… majd közvetlenül rakható is bele a sima lineáris regresszióba (ld. 1. előny):
+<span class="math display">\[
+\widehat{\boldsymbol{\beta}}=\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\mathbf{X}^T\mathbf{y}
+\]</span></p>
+</div>
+<div id="megvalósítás-r-alatt" class="section level3">
+<h3><span class="header-section-number">3.2.6</span> Megvalósítás <code>R</code> alatt</h3>
+<p>Folytassuk az előző fejezet példáját, csak az egyszerűség kedvéért a <span class="math inline">\(\left[0,1\right]\)</span> intervallumon lévő <span class="math inline">\(x\)</span>-szel (ha nem is így lenne, ez átskálázással mindig elérhető):</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-1"></a>n &lt;-<span class="st"> </span><span class="dv">30</span></span>
+<span id="cb55-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-2"></a>x &lt;-<span class="st"> </span><span class="kw">runif</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb55-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-3"></a>xgrid &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dt">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb55-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-4"></a>ygrid &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span>xgrid<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb55-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-5"></a>yobs &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span>x<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">5</span>)</span>
+<span id="cb55-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-6"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(x, yobs)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs)) <span class="op">+</span></span>
+<span id="cb55-7"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-7"></a><span class="st">    </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">data.frame</span>(xgrid, ygrid), <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> ygrid),</span>
+<span id="cb55-8"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-8"></a>              <span class="dt">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="dt">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb55-9"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb55-9"></a>p</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-60-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>A csomópontokat egyenletesen vesszük fel, számuk <span class="math inline">\(q-2\)</span>:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb56-1"></a>xk &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">4</span><span class="op">/</span><span class="dv">5</span></span>
+<span id="cb56-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb56-2"></a>q &lt;-<span class="st"> </span><span class="kw">length</span>(xk) <span class="op">+</span><span class="st"> </span><span class="dv">2</span></span></code></pre></div>
+<p>A bázisfüggvényeknél említett <span class="math inline">\(R\)</span> függvény:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb57-1"></a>rk &lt;-<span class="st"> </span><span class="cf">function</span>( x, z ) {</span>
+<span id="cb57-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb57-2"></a>    ((z<span class="fl">-0.5</span>)<span class="op">^</span><span class="dv">2-1</span><span class="op">/</span><span class="dv">12</span>)<span class="op">*</span>((x<span class="fl">-0.5</span>)<span class="op">^</span><span class="dv">2-1</span><span class="op">/</span><span class="dv">12</span>)<span class="op">/</span><span class="dv">4</span><span class="op">-</span>((<span class="kw">abs</span>(x<span class="op">-</span>z)<span class="op">-</span><span class="fl">0.5</span>)<span class="op">^</span><span class="dv">4</span><span class="op">-</span>(<span class="kw">abs</span>(x<span class="op">-</span>z)<span class="op">-</span><span class="fl">0.5</span>)<span class="op">^</span><span class="dv">2</span><span class="op">/</span><span class="dv">2</span><span class="op">+</span><span class="dv">7</span><span class="op">/</span><span class="dv">240</span>)<span class="op">/</span><span class="dv">24</span></span>
+<span id="cb57-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb57-3"></a>}</span></code></pre></div>
+<p>A modellmátrixot csupa 1-gyel inicializáljuk, így az első oszlop rendben is lesz:</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb58-1"></a>X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>, n, q) </span></code></pre></div>
+<p>Beállítjuk a második oszlopot is:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb59-1"></a>X[, <span class="dv">2</span>] &lt;-<span class="st"> </span>x</span></code></pre></div>
+<p>És most jön a trükk: az <code>outer</code> tetszőleges függvénnyel tud <q>külső szorzatot</q> képezni:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb60-1"></a>X[, <span class="dv">3</span><span class="op">:</span>q] &lt;-<span class="st"> </span><span class="kw">outer</span>(x, xk, <span class="dt">FUN =</span> rk)</span></code></pre></div>
+<p>Mindezeket a késsőbbiekre tekintettel egy függvénybe is összefoghatjuk:</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-1"></a>spl.X &lt;-<span class="st"> </span><span class="cf">function</span>(x, xk) {</span>
+<span id="cb61-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-2"></a>    q &lt;-<span class="st"> </span><span class="kw">length</span>(xk) <span class="op">+</span><span class="st"> </span><span class="dv">2</span></span>
+<span id="cb61-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-3"></a>    n &lt;-<span class="st"> </span><span class="kw">length</span>(x)</span>
+<span id="cb61-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-4"></a>    X &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span>, n, q)</span>
+<span id="cb61-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-5"></a>    X[, <span class="dv">2</span>] &lt;-<span class="st"> </span>x</span>
+<span id="cb61-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-6"></a>    X[, <span class="dv">3</span><span class="op">:</span>q] &lt;-<span class="st"> </span><span class="kw">outer</span>(x, xk, <span class="dt">FUN =</span> rk)</span>
+<span id="cb61-7"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-7"></a>    X</span>
+<span id="cb61-8"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb61-8"></a>}</span></code></pre></div>
+<p>Ezzel a modellmátrixszal végrehajthatjuk a regressziót (ne felejtsük, tengelymetszetre nincs szükség, pontosabban külön tengelymetszre nincs, hiszen az már benne van az így összerakott <code>X</code>-ben):</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb62-1"></a>fit &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span>X <span class="op">-</span><span class="st"> </span><span class="dv">1</span> )</span></code></pre></div>
+<p>Az eredmény szemléltetéséhez az <code>xgrid</code> pontjait is kifejtjük a spline-nal:</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb63-1"></a>Xp &lt;-<span class="st"> </span><span class="kw">spl.X</span>(xgrid, xk)</span>
+<span id="cb63-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb63-2"></a>yp &lt;-<span class="st"> </span>Xp<span class="op">%*%</span><span class="kw">coef</span>(fit)</span>
+<span id="cb63-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb63-3"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">data.frame</span>(xgrid, yp), <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-68-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Még egy kicsit automatizáljunk:</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-1"></a>predspline &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, q) {</span>
+<span id="cb64-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-2"></a>    xk &lt;-<span class="st"> </span>(<span class="dv">1</span><span class="op">:</span>(q<span class="dv">-2</span>))<span class="op">/</span>(q<span class="dv">-1</span>)</span>
+<span id="cb64-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-3"></a>    X &lt;-<span class="st"> </span><span class="kw">spl.X</span>(x, xk)</span>
+<span id="cb64-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-4"></a>    fit &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">~</span><span class="st"> </span>X <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb64-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-5"></a>    xp &lt;-<span class="st"> </span><span class="dv">0</span><span class="op">:</span><span class="dv">100</span><span class="op">/</span><span class="dv">100</span></span>
+<span id="cb64-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-6"></a>    Xp &lt;-<span class="st"> </span><span class="kw">spl.X</span>(xp, xk)</span>
+<span id="cb64-7"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-7"></a>    yp &lt;-<span class="st"> </span>Xp<span class="op">%*%</span><span class="kw">coef</span>(fit)</span>
+<span id="cb64-8"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-8"></a>    <span class="kw">list</span>(<span class="dt">fit =</span> fit, <span class="dt">xp =</span> xp, <span class="dt">yp =</span> yp)</span>
+<span id="cb64-9"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb64-9"></a>}</span></code></pre></div>
+<p>Így például könnyen megnézhetjük az eredményt különböző <span class="math inline">\(q\)</span>-kkal:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb65-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predspline</span>(x, yobs, <span class="dv">6</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb65-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb65-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-70-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb66-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predspline</span>(x, yobs, <span class="dv">11</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb66-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb66-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-70-2.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb67-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predspline</span>(x, yobs, <span class="dv">3</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb67-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb67-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-70-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Látszik, hogy a <span class="math inline">\(q=6\)</span> nagyjából megfelelő, a 11 kicsit sok, a 3 pedig egy leheletnyit mintha kevés lenne. (Most persze könnyű dolgunk van, hiszen tudjuk mi az igazság!) Erre a kérdésre nemsokára visszatérünk.</p>
+</div>
+</div>
+<div id="penalizálás" class="section level2">
+<h2><span class="header-section-number">3.3</span> Penalizálás</h2>
+<div id="dimenzió-meghatározása" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Dimenzió meghatározása</h3>
+<div class="handout">
+<p>
+A <span class="math inline"><span class="math inline">\(q\)</span></span> dimenzió tehát az illeszkedés szabadságát határozza meg
+</p>
+<p>
+Valahogy ezt is meg kellene határozni
+</p>
+<p>
+Jön a fő kérdéskör: a túlilleszkedés elleni védekezés
+</p>
+<p>
+Milyen legyen a ,,simítás foka"?
+</p>
+</div>
+<p>A <span class="math inline">\(q\)</span> dimenzió tehát az illeszkedés szabadságát határozza meg</p>
+<p>Valahogy ezt is meg kellene határozni</p>
+<p>Jön a fő kérdéskör: a túlilleszkedés elleni védekezés</p>
+<p>Milyen legyen a ,,simítás foka"?</p>
+</div>
+<div id="simítás-fokának-meghatározása" class="section level3">
+<h3><span class="header-section-number">3.3.2</span> Simítás fokának meghatározása</h3>
+<div class="handout">
+<p>
+Tehát <span class="math inline"><span class="math inline">\(q\)</span></span>-t kellene valahogy jól belőni
+</p>
+<p>
+Egyszerű <em>modellszelekció</em>?
+</p>
+<ul>
+<li>
+Vagy nem beágyazott modellek szelekciója, vagy nem ekvidisztáns knot-ok, egyik sem túl szerencsés
+</li>
+</ul>
+<p>
+Alternatív ötlet: <span class="math inline"><span class="math inline">\(q\)</span></span> legyen inkább rögzített (elég nagy értéken, kicsit a várható fölé lőve), de a függvényformát nem engedjük teljesen szabadon alakulni
+</p>
+<p>
+Hogyan? Büntetjük a túl ,,zizegős" függvényt!
+</p>
+<p>
+Ez épp a <strong>penalizált regresszió</strong> alapötlete
+</p>
+<p>
+És ami rendkívül fontos: így már jellemzően sem <span class="math inline"><span class="math inline">\(q\)</span></span> pontos megválasztása, sem a knot-ok pontos helye nem bír nagy jelentőséggel (választhatjuk például egyenletesen)!
+</p>
+</div>
+<p>Tehát <span class="math inline">\(q\)</span>-t kellene valahogy jól belőni</p>
+<p>Egyszerű <em>modellszelekció</em>?</p>
+<ul>
+<li>Vagy nem beágyazott modellek szelekciója, vagy nem ekvidisztáns knot-ok, egyik sem túl szerencsés</li>
+</ul>
+<p>Alternatív ötlet: <span class="math inline">\(q\)</span> legyen inkább rögzített (elég nagy értéken, kicsit a várható fölé lőve), de a függvényformát nem engedjük teljesen szabadon alakulni</p>
+<p>Hogyan? Büntetjük a túl ,,zizegős" függvényt!</p>
+<p>Ez épp a <strong>penalizált regresszió</strong> alapötlete</p>
+<p>És ami rendkívül fontos: így már jellemzően sem <span class="math inline">\(q\)</span> pontos megválasztása, sem a knot-ok pontos helye nem bír nagy jelentőséggel (választhatjuk például egyenletesen)!</p>
+</div>
+<div id="penalizált-regresszió" class="section level3">
+<h3><span class="header-section-number">3.3.3</span> Penalizált regresszió</h3>
+<div class="handout">
+<p>
+Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget", ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
+</p>
+<p>
+Valamilyen súllyal ezt vegyük figyelembe: <span class="math display"><span class="math display">\[
+    \left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda\int_0^1 \left[f&amp;#39;&amp;#39;\left(x\right)\right]^2 \dif x
+\]</span></span>
+</p>
+<p>
+A <span class="math inline"><span class="math inline">\(\lambda\)</span></span> a <em>simítási paraméter</em>, ez határozza meg a trade-off-ot a jó illeszkedés és a simaság között
+</p>
+<ul>
+<li>
+<span class="math inline"><span class="math inline">\(\lambda=0\)</span></span>: penalizálatlan becslés, <span class="math inline"><span class="math inline">\(\lambda\rightarrow\infty\)</span></span>: egyenes regressziós függvény
+</li>
+</ul>
+</div>
+<p>Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget", ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre</p>
+<p>Valamilyen súllyal ezt vegyük figyelembe:
+<span class="math display">\[
+    \left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda\int_0^1 \left[f&#39;&#39;\left(x\right)\right]^2 \dif x
+\]</span></p>
+<p>A <span class="math inline">\(\lambda\)</span> a <em>simítási paraméter</em>, ez határozza meg a trade-off-ot a jó illeszkedés és a simaság között</p>
+<ul>
+<li><span class="math inline">\(\lambda=0\)</span>: penalizálatlan becslés, <span class="math inline">\(\lambda\rightarrow\infty\)</span>: egyenes regressziós függvény</li>
+</ul>
+</div>
+<div id="a-simasági-büntetőtag-meghatározása" class="section level3">
+<h3><span class="header-section-number">3.3.4</span> A simasági büntetőtag meghatározása</h3>
+<div class="handout">
+<p>
+A regressziós függvény alakja: <span class="math inline"><span class="math inline">\(f\left(x\right)=\sum_{i=1}^q \beta_i b_i\left(x\right)\)</span></span>
+</p>
+<p>
+Kétszer deriválva: <span class="math inline"><span class="math inline">\(f&amp;#39;&amp;#39;\left(x\right)=\sum_{i=1}^q \beta_i b_i&amp;#39;&amp;#39;\left(x\right)\)</span></span>
+</p>
+<p>
+Négyzetre emelve: <span class="math inline"><span class="math inline">\(\left[f&amp;#39;&amp;#39;\left(x\right)\right]^2=\sum_{i=1}^q \sum_{j=1}^q \beta_i b_i&amp;#39;&amp;#39;\left(x\right) b_j&amp;#39;&amp;#39;\left(x\right) \beta_j\)</span></span>
+</p>
+<p>
+Kiintegrálva: <span class="math inline"><span class="math inline">\(\int_0^1 \left[f&amp;#39;&amp;#39;\left(x\right)\right]^2 \dif x=\sum_{i=1}^q \sum_{j=1}^q \beta_i \left(\int_0^1 b_i&amp;#39;&amp;#39;\left(x\right) b_j&amp;#39;&amp;#39;\left(x\right) \dif x\right) \beta_j\)</span></span>
+</p>
+<p>
+De hát ez épp egy <em>kvadratikus alak</em>! (<span class="math inline"><span class="math inline">\(\sum_{i=1}^q \sum_{j=1}^q x_i a_{ij} x_j= \mathbf{x}^T \mathbf{A} \mathbf{x}\)</span></span>)
+</p>
+<p>
+Legyen <span class="math inline"><span class="math inline">\(S_{ij}=\int_0^1 b_i&amp;#39;&amp;#39;\left(x\right) b_j&amp;#39;&amp;#39;\left(x\right) \dif x\)</span></span> és <span class="math inline"><span class="math inline">\(\mathbf{S}\)</span></span> az ezekből alkotott mátrix, akkor tehát a simítási büntetőtag: <span class="math display"><span class="math display">\[
+    \lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}
+\]</span></span>
+</p>
+<p>
+Az előbb definiált <span class="math inline"><span class="math inline">\(R\)</span></span>-rel <span class="math inline"><span class="math inline">\(\mathbf{S}\)</span></span> alakja nagyon egyszerű lesz: <span class="math inline"><span class="math inline">\(S_{i+2,j+2}=R\left(x_i^{\ast},x_j^{\ast}\right)\)</span></span>, az első két oszlop és sor pedig csupa nulla
+</p>
+</div>
+<p>A regressziós függvény alakja: <span class="math inline">\(f\left(x\right)=\sum_{i=1}^q \beta_i b_i\left(x\right)\)</span></p>
+<p>Kétszer deriválva: <span class="math inline">\(f&#39;&#39;\left(x\right)=\sum_{i=1}^q \beta_i b_i&#39;&#39;\left(x\right)\)</span></p>
+<p>Négyzetre emelve: <span class="math inline">\(\left[f&#39;&#39;\left(x\right)\right]^2=\sum_{i=1}^q \sum_{j=1}^q \beta_i b_i&#39;&#39;\left(x\right) b_j&#39;&#39;\left(x\right) \beta_j\)</span></p>
+<p>Kiintegrálva: <span class="math inline">\(\int_0^1 \left[f&#39;&#39;\left(x\right)\right]^2 \dif x=\sum_{i=1}^q \sum_{j=1}^q \beta_i \left(\int_0^1 b_i&#39;&#39;\left(x\right) b_j&#39;&#39;\left(x\right) \dif x\right) \beta_j\)</span></p>
+<p>De hát ez épp egy <em>kvadratikus alak</em>! (<span class="math inline">\(\sum_{i=1}^q \sum_{j=1}^q x_i a_{ij} x_j= \mathbf{x}^T \mathbf{A} \mathbf{x}\)</span>)</p>
+<p>Legyen <span class="math inline">\(S_{ij}=\int_0^1 b_i&#39;&#39;\left(x\right) b_j&#39;&#39;\left(x\right) \dif x\)</span> és <span class="math inline">\(\mathbf{S}\)</span> az ezekből alkotott mátrix, akkor tehát a simítási büntetőtag:
+<span class="math display">\[
+    \lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}
+\]</span></p>
+<p>Az előbb definiált <span class="math inline">\(R\)</span>-rel <span class="math inline">\(\mathbf{S}\)</span> alakja nagyon egyszerű lesz: <span class="math inline">\(S_{i+2,j+2}=R\left(x_i^{\ast},x_j^{\ast}\right)\)</span>, az első két oszlop és sor pedig csupa nulla</p>
+</div>
+<div id="megvalósítás-r-alatt-1" class="section level3">
+<h3><span class="header-section-number">3.3.5</span> Megvalósítás <code>R</code> alatt</h3>
+<p>Az <code>xk</code> szokásosan a knot-ok helye; a mátrixot pedig csupa nullával inicializáljuk, hogy az első két oszlop és sor egyből jó is legyen és csak a többit kelljen kitölteni:</p>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-1"></a>spl.S &lt;-<span class="st"> </span><span class="cf">function</span>(xk) {</span>
+<span id="cb68-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-2"></a>    q &lt;-<span class="st"> </span><span class="kw">length</span>(xk) <span class="op">+</span><span class="st"> </span><span class="dv">2</span></span>
+<span id="cb68-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-3"></a>    S &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, q, q)</span>
+<span id="cb68-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-4"></a>    S[<span class="dv">3</span><span class="op">:</span>q, <span class="dv">3</span><span class="op">:</span>q] &lt;-<span class="st"> </span><span class="kw">outer</span>(xk, xk, <span class="dt">FUN =</span> rk)</span>
+<span id="cb68-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-5"></a>    S</span>
+<span id="cb68-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb68-6"></a>}</span></code></pre></div>
+</div>
+<div id="a-simítási-büntetőtag-beépítése-a-regressziós-célfüggvénybe" class="section level3">
+<h3><span class="header-section-number">3.3.6</span> A simítási büntetőtag beépítése a regressziós célfüggvénybe</h3>
+<div class="handout">
+<p>
+Kényelmes lenne, ha <span class="math inline"><span class="math inline">\(\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}\)</span></span> helyett írhatnánk egyetlen normát célfüggvényként
+</p>
+<p>
+Ez nem nehéz, ha a második tagot át tudjuk normává alakítani, hiszen (innentől némi blokkmátrix műveletekre szükség lesz) <span class="math display"><span class="math display">\[
+\left\|\mathbf{a}\right\|^2+\left\|\mathbf{b}\right\|^2=\left\|\begin{pmatrix}\mathbf{a} \\ \mathbf{b} \end{pmatrix}\right\|^2
+\]</span></span>
+</p>
+<p>
+Legyen <span class="math inline"><span class="math inline">\(\mathbf{B}\)</span></span> olyan, hogy <span class="math inline"><span class="math inline">\(\mathbf{B}^T\mathbf{B}=\mathbf{S}\)</span></span> (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke"), ekkor <span class="math display"><span class="math display">\[
+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \lambda \boldsymbol{\beta}^T\mathbf{B}^T\mathbf{B}\boldsymbol{\beta}=\lambda \left( \mathbf{B} \boldsymbol{\beta}\right)^T\mathbf{B}\boldsymbol{\beta} =\left( \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right)^T\left(\sqrt{\lambda}\mathbf{B}\boldsymbol{\beta}\right)
+\]</span></span>
+</p>
+<p>
+Ezzel meg is vagyunk, hiszen a norma egyszerűen <span class="math inline"><span class="math inline">\(\left\|\mathbf{a}\right\|^2=\mathbf{a}^T\mathbf{a}\)</span></span>, így <span class="math display"><span class="math display">\[
+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2
+\]</span></span> ahonnan <span class="math display"><span class="math display">\[
+\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}=\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2\]</span></span> és így, az előzőek szerint <span class="math display"><span class="math display">\[
+\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2=\left\|\begin{pmatrix}\mathbf{y}-\mathbf{X}\boldsymbol{\beta} \\ \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta} \end{pmatrix}\right\|^2
+\]</span></span>
+</p>
+<p>
+Jó lenne <span class="math inline"><span class="math inline">\(\boldsymbol{\beta}\)</span></span>-t kiemelni; ez nem is túl nehéz, hiszen <span class="math inline"><span class="math inline">\(\mathbf{a}\)</span></span> és <span class="math inline"><span class="math inline">\(-\mathbf{a}\)</span></span> normája ugyanaz: <span class="math display"><span class="math display">\[
+\left\|\begin{pmatrix}\mathbf{y}-\mathbf{X}\boldsymbol{\beta} \\ \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta} \end{pmatrix}\right\|^2 = \left\| \begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix} - \begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}\boldsymbol{\beta}\right\|^2
+\]</span></span>
+</p>
+</div>
+<p>Kényelmes lenne, ha <span class="math inline">\(\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}\)</span> helyett írhatnánk egyetlen normát célfüggvényként</p>
+<p>Ez nem nehéz, ha a második tagot át tudjuk normává alakítani, hiszen (innentől némi blokkmátrix műveletekre szükség lesz)
+<span class="math display">\[
+\left\|\mathbf{a}\right\|^2+\left\|\mathbf{b}\right\|^2=\left\|\begin{pmatrix}\mathbf{a} \\ \mathbf{b} \end{pmatrix}\right\|^2
+\]</span></p>
+<p>Legyen <span class="math inline">\(\mathbf{B}\)</span> olyan, hogy <span class="math inline">\(\mathbf{B}^T\mathbf{B}=\mathbf{S}\)</span> (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke"), ekkor
+<span class="math display">\[
+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \lambda \boldsymbol{\beta}^T\mathbf{B}^T\mathbf{B}\boldsymbol{\beta}=\lambda \left( \mathbf{B} \boldsymbol{\beta}\right)^T\mathbf{B}\boldsymbol{\beta} =\left( \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right)^T\left(\sqrt{\lambda}\mathbf{B}\boldsymbol{\beta}\right)
+\]</span></p>
+<p>Ezzel meg is vagyunk, hiszen a norma egyszerűen <span class="math inline">\(\left\|\mathbf{a}\right\|^2=\mathbf{a}^T\mathbf{a}\)</span>, így
+<span class="math display">\[
+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2
+\]</span>
+ahonnan
+<span class="math display">\[
+\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta}=\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2\]</span>
+és így, az előzőek szerint
+<span class="math display">\[
+\left\|\mathbf{y}-\mathbf{X}\boldsymbol{\beta}\right\|^2+\left\|\sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right\|^2=\left\|\begin{pmatrix}\mathbf{y}-\mathbf{X}\boldsymbol{\beta} \\ \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta} \end{pmatrix}\right\|^2
+\]</span></p>
+<p>Jó lenne <span class="math inline">\(\boldsymbol{\beta}\)</span>-t kiemelni; ez nem is túl nehéz, hiszen <span class="math inline">\(\mathbf{a}\)</span> és <span class="math inline">\(-\mathbf{a}\)</span> normája ugyanaz:
+<span class="math display">\[
+\left\|\begin{pmatrix}\mathbf{y}-\mathbf{X}\boldsymbol{\beta} \\ \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta} \end{pmatrix}\right\|^2 = \left\| \begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix} - \begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}\boldsymbol{\beta}\right\|^2
+\]</span></p>
+</div>
+<div id="regresszió-megoldása-a-penalizálással" class="section level3">
+<h3><span class="header-section-number">3.3.7</span> Regresszió megoldása a penalizálással</h3>
+<div class="handout">
+<p>
+Innentől a regresszió játszi könnyedséggel (értsd: a szokványos, nem is penalizált eszköztárral) megoldható, csak <span class="math inline"><span class="math inline">\(\mathbf{X}\)</span></span> szerepét <span class="math inline"><span class="math inline">\(\begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}\)</span></span>, <span class="math inline"><span class="math inline">\(\mathbf{y}\)</span></span> szerepét <span class="math inline"><span class="math inline">\(\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}\)</span></span> játssza
+</p>
+<p>
+Így az ,,<span class="math inline"><span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span></span>" épp <span class="math inline"><span class="math inline">\(\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}\)</span></span> lesz
+</p>
+<p>
+Az ,,<span class="math inline"><span class="math inline">\(\mathbf{X}^T\mathbf{y}\)</span></span>" pedig <span class="math inline"><span class="math inline">\(\mathbf{X}^T\mathbf{y}\)</span></span> (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
+</p>
+<p>
+Így az OLS megoldás: <span class="math display"><span class="math display">\[
+\widehat{\boldsymbol{\beta}}=\left(\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}\right)^{-1}\mathbf{X}^T\mathbf{y}
+\]</span></span>
+</p>
+<p>
+(Persze a gyakorlatban ennek közvetlen számítása helyett célszerűbb az augmentált eredmény- és magyarázóváltozókat berakni egy hatékonyabb lineáris regressziót megoldó módszerbe)
+</p>
+</div>
+<p>Innentől a regresszió játszi könnyedséggel (értsd: a szokványos, nem is penalizált eszköztárral) megoldható, csak <span class="math inline">\(\mathbf{X}\)</span> szerepét <span class="math inline">\(\begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}\)</span>, <span class="math inline">\(\mathbf{y}\)</span> szerepét <span class="math inline">\(\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}\)</span> játssza</p>
+<p>Így az ,,<span class="math inline">\(\mathbf{X}^T\mathbf{X}\)</span>" épp <span class="math inline">\(\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}\)</span> lesz</p>
+<p>Az ,,<span class="math inline">\(\mathbf{X}^T\mathbf{y}\)</span>" pedig <span class="math inline">\(\mathbf{X}^T\mathbf{y}\)</span> (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)</p>
+<p>Így az OLS megoldás:
+<span class="math display">\[
+\widehat{\boldsymbol{\beta}}=\left(\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}\right)^{-1}\mathbf{X}^T\mathbf{y}
+\]</span></p>
+<p>(Persze a gyakorlatban ennek közvetlen számítása helyett célszerűbb az augmentált eredmény- és magyarázóváltozókat berakni egy hatékonyabb lineáris regressziót megoldó módszerbe)</p>
+</div>
+<div id="megvalósítás-r-alatt-2" class="section level3">
+<h3><span class="header-section-number">3.3.8</span> Megvalósítás <code>R</code> alatt</h3>
+<p>Mátrix <q>gyökének</q> a számítása (spektrális felbontással):</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb69-1"></a>mat.sqrt &lt;-<span class="st"> </span><span class="cf">function</span>(S) {</span>
+<span id="cb69-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb69-2"></a>    d &lt;-<span class="st"> </span><span class="kw">eigen</span>(S, <span class="dt">symmetric =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb69-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb69-3"></a>    d<span class="op">$</span>vectors<span class="op">%*%</span><span class="kw">diag</span>(d<span class="op">$</span>values<span class="op">^</span><span class="fl">0.5</span>)<span class="op">%*%</span><span class="kw">t</span>(d<span class="op">$</span>vectors)</span>
+<span id="cb69-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb69-4"></a>}</span></code></pre></div>
+<p>Ahogy volt róla, penalizálás mellett a <span class="math inline">\(q\)</span> pontos értéke nem túl fontos, csak ne legyen túl kicsi, ezért használjunk most <span class="math inline">\(q=20\)</span>-at.</p>
+<p>A penalizált becslés az augmentált modellmátrix használatával (kihasználjuk, hogy ha nem létező elemre hivatkozunk, az R automatikusan kiegészíti a vektort):</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-1"></a>predsplinepen &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, q, lambda) {</span>
+<span id="cb70-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-2"></a>    xk &lt;-<span class="st"> </span>(<span class="dv">1</span><span class="op">:</span>(q<span class="dv">-2</span>))<span class="op">/</span>(q<span class="dv">-1</span>)</span>
+<span id="cb70-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-3"></a>    Xa &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">spl.X</span>(x, xk), <span class="kw">sqrt</span>(lambda) <span class="op">*</span><span class="st"> </span><span class="kw">mat.sqrt</span>(<span class="kw">spl.S</span>(xk)))</span>
+<span id="cb70-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-4"></a>    ya &lt;-<span class="st"> </span><span class="kw">c</span>(y, <span class="kw">rep</span>(<span class="dv">0</span>, q))</span>
+<span id="cb70-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-5"></a>    fit &lt;-<span class="st"> </span><span class="kw">lm</span>(ya <span class="op">~</span><span class="st"> </span>Xa <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb70-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-6"></a>    xp &lt;-<span class="st"> </span><span class="dv">0</span><span class="op">:</span><span class="dv">100</span><span class="op">/</span><span class="dv">100</span></span>
+<span id="cb70-7"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-7"></a>    Xp &lt;-<span class="st"> </span><span class="kw">spl.X</span>(xp, xk)</span>
+<span id="cb70-8"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-8"></a>    yp &lt;-<span class="st"> </span>Xp<span class="op">%*%</span><span class="kw">coef</span>(fit)</span>
+<span id="cb70-9"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-9"></a>    <span class="kw">list</span>(<span class="dt">fit =</span> fit, <span class="dt">xp =</span> xp, <span class="dt">yp =</span> yp)</span>
+<span id="cb70-10"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb70-10"></a>}</span></code></pre></div>
+<p>Ezzel könnyen meghatározhatjuk az eredményt különböző <span class="math inline">\(\lambda\)</span>-kra:</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb71-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predsplinepen</span>(x, yobs, <span class="dv">20</span>, <span class="dv">1</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb71-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb71-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-80-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb72-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predsplinepen</span>(x, yobs, <span class="dv">20</span>, <span class="fl">0.001</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb72-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb72-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-80-2.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb73-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predsplinepen</span>(x, yobs, <span class="dv">20</span>, <span class="fl">0.000001</span>), <span class="kw">data.frame</span>(xp, yp)),</span>
+<span id="cb73-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb73-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-80-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Látható, hogy a <span class="math inline">\(\lambda=1\)</span> túl nagy, a <span class="math inline">\(0,\!001\)</span> jónak tűnik, a <span class="math inline">\(0,\!000001\)</span> túl kicsi.</p>
+</div>
+</div>
+<div id="simítási-paraméter-meghatározása" class="section level2">
+<h2><span class="header-section-number">3.4</span> Simítási paraméter meghatározása</h2>
+<div id="a-simítási-paraméter-meghatározása" class="section level3">
+<h3><span class="header-section-number">3.4.1</span> A simítási paraméter meghatározása</h3>
+<div class="handout">
+<p>
+Kérdés még a <span class="math inline"><span class="math inline">\(\lambda\)</span></span> értéke
+</p>
+<p>
+Sima OLS-jellegű eljárással, tehát a reziduális négyzetösszeg minimalizálást tűzve ki célul nyilván nem határozható meg (hiszen az mindig 0-t adna)
+</p>
+<p>
+Épp az a lényeg, hogy a túlilleszkedésre is tekintettel legyünk
+</p>
+<p>
+Ötlet: keresztvalidáció
+</p>
+</div>
+<p>Kérdés még a <span class="math inline">\(\lambda\)</span> értéke</p>
+<p>Sima OLS-jellegű eljárással, tehát a reziduális négyzetösszeg minimalizálást tűzve ki célul nyilván nem határozható meg (hiszen az mindig 0-t adna)</p>
+<p>Épp az a lényeg, hogy a túlilleszkedésre is tekintettel legyünk</p>
+<p>Ötlet: keresztvalidáció</p>
+</div>
+<div id="keresztvalidációs-módszerek-ocv" class="section level3">
+<h3><span class="header-section-number">3.4.2</span> Keresztvalidációs módszerek: OCV</h3>
+<div class="handout">
+<p>
+Mindig egy pontot hagyunk ki, és így számolunk hibát: OCV
+</p>
+<p>
+(Szokták egy-kihagyásos keresztvalidációnak, LOOCV-nek is nevezni)
+</p>
+<p>
+Tehát: <span class="math display"><span class="math display">\[
+    E_{OCV}=\frac{1}{n}\sum_{i=1}^n \left( \widehat{f}_i^{\left[-i\right]} - y_i\right)^2
+\]</span></span>
+</p>
+<p>
+Szerencsére nem kell ténylegesen <span class="math inline"><span class="math inline">\(n\)</span></span>-szer lefuttatni a regressziót mert belátható, hogy <span class="math display"><span class="math display">\[
+    E_{OCV}=\frac{1}{n}\sum_{i=1}^n \left(y_i - \widehat{f}_i\right)^2/\left(1-A_{ii}\right)^2,
+\]</span></span> ahol <span class="math inline"><span class="math inline">\(\mathbf{A}\)</span></span> az influence mátrix
+</p>
+</div>
+<p>Mindig egy pontot hagyunk ki, és így számolunk hibát: OCV</p>
+<p>(Szokták egy-kihagyásos keresztvalidációnak, LOOCV-nek is nevezni)</p>
+<p>Tehát:
+<span class="math display">\[
+    E_{OCV}=\frac{1}{n}\sum_{i=1}^n \left( \widehat{f}_i^{\left[-i\right]} - y_i\right)^2
+\]</span></p>
+<p>Szerencsére nem kell ténylegesen <span class="math inline">\(n\)</span>-szer lefuttatni a regressziót mert belátható, hogy
+<span class="math display">\[
+    E_{OCV}=\frac{1}{n}\sum_{i=1}^n \left(y_i - \widehat{f}_i\right)^2/\left(1-A_{ii}\right)^2,
+\]</span>
+ahol <span class="math inline">\(\mathbf{A}\)</span> az influence mátrix</p>
+</div>
+<div id="keresztvalidációs-módszerek-gcv" class="section level3">
+<h3><span class="header-section-number">3.4.3</span> Keresztvalidációs módszerek: GCV</h3>
+<div class="handout">
+<p>
+Ha az <span class="math inline"><span class="math inline">\(A_{ii}\)</span></span>-ket az átlagukkal helyettesítjük, akkor az általánosított keresztvalidációhoz jutunk (GCV)
+</p>
+<p>
+Tehát: <span class="math display"><span class="math display">\[
+    E_{GCV}=\frac{1}{n}\sum_{i=1}^n \left(y_i - \widehat{f}_i\right)^2/\left[\mathrm{tr}\left(\mathbf{I}-\mathbf{A}\right)\right]^2
+\]</span></span>
+</p>
+</div>
+<p>Ha az <span class="math inline">\(A_{ii}\)</span>-ket az átlagukkal helyettesítjük, akkor az általánosított keresztvalidációhoz jutunk (GCV)</p>
+<p>Tehát:
+<span class="math display">\[
+    E_{GCV}=\frac{1}{n}\sum_{i=1}^n \left(y_i - \widehat{f}_i\right)^2/\left[\mathrm{tr}\left(\mathbf{I}-\mathbf{A}\right)\right]^2
+\]</span></p>
+</div>
+<div id="megvalósítás-r-alatt-3" class="section level3">
+<h3><span class="header-section-number">3.4.4</span> Megvalósítás <code>R</code> alatt</h3>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-1"></a>predV &lt;-<span class="st"> </span><span class="dv">10</span><span class="op">^</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">8</span>, <span class="dv">3</span>, <span class="dt">length.out =</span> <span class="dv">100</span>))</span>
+<span id="cb74-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-2"></a>V &lt;-<span class="st"> </span><span class="kw">sapply</span>(predV, <span class="cf">function</span>(lambda) {</span>
+<span id="cb74-3"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-3"></a>    fit &lt;-<span class="st"> </span><span class="kw">predsplinepen</span>(x, yobs, <span class="dv">20</span>, lambda)<span class="op">$</span>fit</span>
+<span id="cb74-4"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-4"></a>    trA &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">influence</span>(fit)<span class="op">$</span>hat[<span class="dv">1</span><span class="op">:</span>n])</span>
+<span id="cb74-5"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-5"></a>    rss &lt;-<span class="st"> </span><span class="kw">sum</span>((yobs <span class="op">-</span><span class="st"> </span><span class="kw">fitted</span>(fit)[<span class="dv">1</span><span class="op">:</span>n])<span class="op">^</span><span class="dv">2</span>)</span>
+<span id="cb74-6"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-6"></a>    n<span class="op">*</span>rss<span class="op">/</span>(n <span class="op">-</span><span class="st"> </span>trA)<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb74-7"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-7"></a>} )</span>
+<span id="cb74-8"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb74-8"></a><span class="kw">ggplot</span>(<span class="kw">data.frame</span>(predV, V), <span class="kw">aes</span>(<span class="dt">x =</span> predV, <span class="dt">y =</span> V)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span><span class="kw">scale_x_log10</span>()</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-84-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>A legjobb <span class="math inline">\(\lambda\)</span> konkrét érték:</p>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb75-1"></a>predV[<span class="kw">which.min</span>(V)]</span></code></pre></div>
+<pre><code>## [1] 0.002782559</code></pre>
+<p>És az – ilyen értelemben – optimális spline ezzel:</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb77-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">with</span>(<span class="kw">predsplinepen</span>(x, yobs, <span class="dv">20</span>, predV[<span class="kw">which.min</span>(V)]),</span>
+<span id="cb77-2"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#cb77-2"></a>                          <span class="kw">data.frame</span>(xp, yp)), <span class="kw">aes</span>(<span class="dt">x =</span> xp, <span class="dt">y =</span> yp))</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-86-1.png" width="672" style="display: block; margin: auto;" /></p>
+
+</div>
+</div>
+</div>
+<!-- Default Statcounter code for Physcon Research
+http://research.physcon.uni-obuda.hu/ -->
+<script type="text/javascript">
+var sc_project=11601191; 
+var sc_invisible=1; 
+var sc_security="5a06c22d"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="ingyen
+webstatisztika" href="https://www.statcounter.hu/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/11601191/0/5a06c22d/1/"
+alt="ingyen webstatisztika"></a></div></noscript>
+<!-- End of Statcounter Code -->
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="additív-modellek.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/tamas-ferenci/FerenciTamas_SmoothingSplinesGAM/edit/master/03-SplineRegression.Rmd",
+"text": "Szerkesztés"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["FerenciTamas_SmoothingSplinesGAM.pdf", "FerenciTamas_SmoothingSplinesGAM.epub"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

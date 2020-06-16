@@ -1,0 +1,5 @@
+bookdown::render_book("index.Rmd", "bookdown::pdf_book")
+bookdown::render_book("index.Rmd", "bookdown::gitbook")
+bookdown::render_book("index.Rmd", "bookdown::epub_book")
+bookdown::render_book("index.Rmd", "beamer_presentation")
+file.rename("FerenciTamas_SmoothingSplinesGAM.pdf", "./docs/FerenciTamas_SmoothingSplinesGAM_handout.pdf")
