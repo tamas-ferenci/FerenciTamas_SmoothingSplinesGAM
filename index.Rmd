@@ -10,8 +10,6 @@ link-citations: yes
 description: "Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik."
 lang: hu
 github-repo: tamas-ferenci/FerenciTamas_SmoothingSplinesGAM
-mainfont: XITS
-mathfont: XITS Math
 url: https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/
 cover-image: FerenciTamas_SmoothingSplinesGAM_cover.png
 ---
