@@ -203,7 +203,7 @@ predict(lm(y~x+I(x^2)), data.frame(x = 43.9))
 predict(lm(y~poly(x,2)), data.frame(x = 43.9))
 ```
 
-A magyarázat, hogy a `poly` alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak, egymásra és a csupa $1$ vektorra nézve:
+A magyarázat, hogy a `poly` alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak:
 
 ```{r}
 t(cbind(1, poly(x, 3)))%*%cbind(1, poly(x, 3))
@@ -294,4 +294,11 @@ Az optimális simítási paraméter értéke számszerűen is meghatározható:
 
 ```{r}
 spans[which.min(SSEfull)]
+```
+
+A simítás ezzel:
+
+```{r}
+p + geom_line(data = SmoothData[SmoothData$span==spans[which.min(SSEfull)], ],
+              aes(x = grid, y = value), color = "red")
 ```

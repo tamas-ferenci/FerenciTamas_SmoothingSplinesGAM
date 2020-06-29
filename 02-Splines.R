@@ -72,7 +72,7 @@
 ## Tekintsünk most egy másik példát, egy zajos másodfokú függvényt, kevesebb pontból:
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------
 n <- 20
 x <- runif(n, 0, 10)
 xgrid <- seq(0, 10, length.out = 100)
@@ -84,7 +84,7 @@ p <- ggplot(SimData) + geom_point(aes(x = x, y = yobs)) +
 p
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------
 fit5 <- lm(yobs ~ poly(x, 5), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fit5, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
@@ -102,7 +102,7 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit5, data.frame(x = xgrid
 ## Szokás azt mondani, hogy a rang 5 illetve 10 (a polinom fokszáma, a becsülendő paraméterek száma nyilván egyezik a modellmátrix rangjával, de ez a fogalom később, amikor nem is polinomunk van, akkor is használható)
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------
 fit10 <- lm(yobs ~ poly(x, 10), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
@@ -144,13 +144,13 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgri
 ## (Azért köbös, mert harmadfokúak a polinomok, és azért természetes, mert azt kötöttük ki, hogy a végpontokban nulla legyen a második derivált)
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------
 fitSpline <- lm(yobs ~ splines::ns(x, 10), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fitSpline, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
 
 
-## --------------------------------------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------------------------------------
 p + geom_line(data = rbind(data.frame(type = "Ötödfokú polinom",
                                       pred = predict(fit5, data.frame(x = xgrid)), xgrid),
                            data.frame(type = "Tizedfokú polinom",

@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>1 . fejezet A LOESS simító | Simítás, spline-regresszió, additív modellek</title>
   <meta name="description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
-  <meta name="generator" content="bookdown 0.19 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="1 . fejezet A LOESS simító | Simítás, spline-regresszió, additív modellek" />
   <meta property="og:type" content="book" />
@@ -49,6 +49,7 @@
 
 
 
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19799395-2"></script>
 <script>
@@ -278,15 +279,16 @@ A LOESS simítóról lesz szó
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="a-loess-simító.html#cb7-1"></a><span class="kw">ceiling</span>(n<span class="op">*</span>span)</span></code></pre></div>
 <pre><code>## [1] 76</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="a-loess-simító.html#cb9-1"></a><span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>))</span></code></pre></div>
-<pre><code>##   [1]  0.3010648  0.4925435  1.4217864  1.5619826  2.4081023  2.4943871  3.4406099  3.4844204  4.3529248  4.4178779  5.4056164  5.4521850
-##  [13]  6.5016190  6.5417942  7.5044934  7.6358680  8.3875069  8.4897212  9.5387672  9.7214700 10.4946195 10.5621241 11.3622940 11.4610157
-##  [25] 12.3488219 12.4585005 13.4605710 13.5305388 14.4424219 14.4940687 15.4261675 15.6100025 16.4512571 16.5763176 17.4835476 17.5820468
-##  [37] 18.4670492 18.4746638 19.3404719 19.5696963 20.5556663 20.5835629 21.4311244 21.4816357 22.4292505 22.5626454 23.5364582 24.5768533
-##  [49] 25.4887654 26.5881108 27.5398106 28.4387974 29.5341120 30.3870637 31.6433024 32.6980400 33.4632779 34.3955865 35.5569720 36.4864945
-##  [61] 37.7401618 38.4960760 39.5689739 40.5028002 41.4256727 42.5188792 43.3195041 44.6465555 45.5153253 46.7172612 47.5475510 48.4290054
-##  [73] 49.5610726 50.4065902 51.3746367 52.5291446 53.4556708 54.5001105 55.5074341 56.4410479 57.4431331 58.4864821 59.6178087 60.3476433
-##  [85] 61.5593946 62.5332950 63.6063100 64.4695816 65.5370019 66.5267099 67.4457480 68.6207868 69.6160403 70.5700214 71.6586833 72.5558486
-##  [97] 73.3723408 74.4426735 75.3775387 76.4526599 77.4379633</code></pre>
+<pre><code>##   [1]  0.3010648  0.4925435  1.4217864  1.5619826  2.4081023  2.4943871  3.4406099  3.4844204  4.3529248  4.4178779  5.4056164
+##  [12]  5.4521850  6.5016190  6.5417942  7.5044934  7.6358680  8.3875069  8.4897212  9.5387672  9.7214700 10.4946195 10.5621241
+##  [23] 11.3622940 11.4610157 12.3488219 12.4585005 13.4605710 13.5305388 14.4424219 14.4940687 15.4261675 15.6100025 16.4512571
+##  [34] 16.5763176 17.4835476 17.5820468 18.4670492 18.4746638 19.3404719 19.5696963 20.5556663 20.5835629 21.4311244 21.4816357
+##  [45] 22.4292505 22.5626454 23.5364582 24.5768533 25.4887654 26.5881108 27.5398106 28.4387974 29.5341120 30.3870637 31.6433024
+##  [56] 32.6980400 33.4632779 34.3955865 35.5569720 36.4864945 37.7401618 38.4960760 39.5689739 40.5028002 41.4256727 42.5188792
+##  [67] 43.3195041 44.6465555 45.5153253 46.7172612 47.5475510 48.4290054 49.5610726 50.4065902 51.3746367 52.5291446 53.4556708
+##  [78] 54.5001105 55.5074341 56.4410479 57.4431331 58.4864821 59.6178087 60.3476433 61.5593946 62.5332950 63.6063100 64.4695816
+##  [89] 65.5370019 66.5267099 67.4457480 68.6207868 69.6160403 70.5700214 71.6586833 72.5558486 73.3723408 74.4426735 75.3775387
+## [100] 76.4526599 77.4379633</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="a-loess-simító.html#cb11-1"></a><span class="kw">sort</span>(<span class="kw">abs</span>(x<span class="fl">-23.5</span>))[<span class="kw">ceiling</span>(n<span class="op">*</span>span)]</span></code></pre></div>
 <pre><code>## [1] 52.52914</code></pre>
 <p>A másik eszköz, hogy még a megtartott pontokon belül is súlyozunk: minél távolabb esik egy pont a vizsgált értéktől annál kisebb lesz a súlya. Általában a trikubikus súlyfüggvényt használjuk:</p>
@@ -407,7 +409,7 @@ A LOESS simítóról lesz szó
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="a-loess-simító.html#cb33-1"></a><span class="kw">predict</span>(<span class="kw">lm</span>(y<span class="op">~</span><span class="kw">poly</span>(x,<span class="dv">2</span>)), <span class="kw">data.frame</span>(<span class="dt">x =</span> <span class="fl">43.9</span>))</span></code></pre></div>
 <pre><code>##         1 
 ## 0.1119441</code></pre>
-<p>A magyarázat, hogy a <code>poly</code> alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak, egymásra és a csupa <span class="math inline">\(1\)</span> vektorra nézve:</p>
+<p>A magyarázat, hogy a <code>poly</code> alapjáraton ortogonalizálja a tagokat (azaz olyan másodfokú polinomot szolgáltat, melynek elemei korrelálatlanok egymással). Nézzük is meg, a kapott vektorok csakugyan ortogonálisak, sőt, sortonormáltak:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="a-loess-simító.html#cb35-1"></a><span class="kw">t</span>(<span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>)))<span class="op">%*%</span><span class="kw">cbind</span>(<span class="dv">1</span>, <span class="kw">poly</span>(x, <span class="dv">3</span>))</span></code></pre></div>
 <pre><code>##                             1             2             3
 ##    1.010000e+02  2.498002e-16  2.720046e-15 -2.775558e-17
@@ -480,6 +482,10 @@ A LOESS simítóról lesz szó
 <p>Az optimális simítási paraméter értéke számszerűen is meghatározható:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="a-loess-simító.html#cb48-1"></a>spans[<span class="kw">which.min</span>(SSEfull)]</span></code></pre></div>
 <pre><code>## [1] 0.21</code></pre>
+<p>A simítás ezzel:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="a-loess-simító.html#cb50-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> SmoothData[SmoothData<span class="op">$</span>span<span class="op">==</span>spans[<span class="kw">which.min</span>(SSEfull)], ],</span>
+<span id="cb50-2"><a href="a-loess-simító.html#cb50-2"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> grid, <span class="dt">y =</span> value), <span class="dt">color =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
 
 </div>
 </div>
