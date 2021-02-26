@@ -13,7 +13,7 @@ set.seed(1)
 
 ## Motiváció
 
-Első lépésben előkészítünk egy demonstrációs adatbázist. Szimulált adatokat fogunk használni (zajos szinusz), így mi is tudni fogjuk, hogy mi az "igazság", a valódi függvény amiből a pontok jöttek:
+Első lépésben előkészítünk egy demonstrációs adatbázist. Szimulált adatokat fogunk használni (zajos szinusz), így mi is tudni fogjuk, hogy mi az „igazság”, a valódi függvény amiből a pontok jöttek:
 
 ```{r}
 n <- 101
@@ -34,7 +34,7 @@ p + geom_smooth(formula = y~x, method = "lm", se = FALSE)
 
 Ez az ábra jól mutatja ennek a fő problémáját: hogy ezt a feltételezést el is ronthatjuk! Természetesen vannak diagnosztikai eszközök ennek felderítésére, és ez alapján kereshetünk jobb függvényformát, de gyökerestül csak az oldja meg a problémát, ha olyan módszert találnánk, ami a nélkül működik, hogy egyáltalán fel kelljen tételeznie (bármilyen) függvényformát. Ezt oldják meg a simítási eljárások. (Lényegében nemparaméteres regresszióról van szó.)
 
-Annak az előnynek, hogy nem kell ilyen feltételezéssel élnünk (és így azt el sem ronthatjuk), természetesen ára van: kevésbé hatásosan becsülhető, mint a paraméteres illesztés, nincsenek számszerű paramétereink (aminek esetleg tárgyterületi interpretációt lehet adni), csak "ábrát tudunk rajzolni", és végezetül extrapoláció sem lehetséges, legalábbis nem triviálisan.
+Annak az előnynek, hogy nem kell ilyen feltételezéssel élnünk (és így azt el sem ronthatjuk), természetesen ára van: kevésbé hatásosan becsülhető, mint a paraméteres illesztés, nincsenek számszerű paramétereink (aminek esetleg tárgyterületi interpretációt lehet adni), csak „ábrát tudunk rajzolni”, és végezetül extrapoláció sem lehetséges, legalábbis nem triviálisan.
 
 ## A LOESS simító alapgondolata
 

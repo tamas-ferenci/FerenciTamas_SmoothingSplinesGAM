@@ -4,7 +4,7 @@
 ## **Regresszió**: változók közti kapcsolat (illetve annak becslése minta alapján)
 
 ## 
-## ,,Kapcsolat" formalizálása: függvény a matematikai fogalmával, tehát keressük az
+## „Kapcsolat” formalizálása: függvény a matematikai fogalmával, tehát keressük az
 
 ## \[
 
@@ -18,7 +18,7 @@
 ## ($Y$ eredményváltozó, $X_i$-k a magyarázó változók)
 
 
-## **Paraméteres regresszió**: ha *a priori* feltételezzük, hogy az $f$ függvény valamilyen -- paraméterek erejéig meghatározott -- függvényformájú (az ,,alakja" ismert), és így a feladat e paraméterek becslésére redukálódik
+## **Paraméteres regresszió**: ha *a priori* feltételezzük, hogy az $f$ függvény valamilyen -- paraméterek erejéig meghatározott -- függvényformájú (az „alakja” ismert), és így a feladat e paraméterek becslésére redukálódik
 
 ## 
 ## Tipikus példa a **lineáris regresszió**: $f\left(\mathbf{X}\right)=\beta_0+\beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p=\mathbf{X}^T\pmb{\beta}$, így $Y=\mathbf{X}^T\pmb{\beta}+\varepsilon$
@@ -36,7 +36,7 @@
 ## Itt tehát $\mathbf{X}$ az a mátrix, amiben a magyarázó változók elé egy csupa 1 oszlopot szúrtunk, a neve **modellmátrix** vagy design mátrix
 
 
-## De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára *jó feltételezést* tettünk-e (hiszen ez nem az adatokból következik, ezt ,,ráerőszakoljuk" az adatokra)
+## De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára *jó feltételezést* tettünk-e (hiszen ez nem az adatokból következik, ezt „ráerőszakoljuk” az adatokra)
 
 ## 
 ## (Persze ezért van a modelldiagnosztika)
@@ -45,7 +45,7 @@
 ## A nem-paraméteres regresszió *flexibilis*, olyan értelemben, hogy minden a priori megkötés nélkül követi azt, ami az adatokból következik (a valóság ritkán lineáris?)
 
 ## 
-## Cserében nehezebb becsülni, és nem kapunk analitikus -- jó esetben valamire hasznosítható -- regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni (,,fordul a kocka" a paraméteres esethez képest)
+## Cserében nehezebb becsülni, és nem kapunk analitikus -- jó esetben valamire hasznosítható -- regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni („fordul a kocka" a paraméteres esethez képest)
 
 
 ## Maradva a paraméteres keretben, arra azért mód van, hogy a függvényformát kibővítsük (és így flexibilisebbé tegyük)
@@ -57,7 +57,7 @@
 ## E nemlinearitásoknak két alaptípusa van
 
 ## 
-## -   Változójában nemlineáris modell (pl. $\beta_0 + \beta_1 x + \beta_2 x^2$): csak a szó ,,matematikai értelmében" nemlineáris, ugyanúgy becsülhető OLS-sel
+## -   Változójában nemlineáris modell (pl. $\beta_0 + \beta_1 x + \beta_2 x^2$): csak a szó „matematikai értelmében” nemlineáris, ugyanúgy becsülhető OLS-sel
 
 ## 
 ## -   Paraméterében nemlineáris modell (pl. $\beta_0x_1^{\beta_1}x_2^{\beta_2}$): felrúgja a lineáris struktúrát, így érdemileg más, csak linearizálás után, vagy NLS-sel becsülhető
@@ -66,13 +66,13 @@
 ## Mi most az első esettel fogunk foglalkozni
 
 ## 
-## Az itt látott ,,polinomiális regresszió" valóban nagyon gyakori módszer a flexibilitás növelésére
+## Az itt látott „polinomiális regresszió” valóban nagyon gyakori módszer a flexibilitás növelésére
 
 
 ## Tekintsünk most egy másik példát, egy zajos másodfokú függvényt, kevesebb pontból:
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 n <- 20
 x <- runif(n, 0, 10)
 xgrid <- seq(0, 10, length.out = 100)
@@ -84,7 +84,7 @@ p <- ggplot(SimData) + geom_point(aes(x = x, y = yobs)) +
 p
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 fit5 <- lm(yobs ~ poly(x, 5), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fit5, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
@@ -102,7 +102,7 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit5, data.frame(x = xgrid
 ## Szokás azt mondani, hogy a rang 5 illetve 10 (a polinom fokszáma, a becsülendő paraméterek száma nyilván egyezik a modellmátrix rangjával, de ez a fogalom később, amikor nem is polinomunk van, akkor is használható)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 fit10 <- lm(yobs ~ poly(x, 10), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
@@ -120,7 +120,7 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgri
 ## Mi lehet akkor a megoldás?
 
 
-## Egy lehetséges megközelítés: ,,összerakjuk a globálisat több lokálisból"
+## Egy lehetséges megközelítés: „összerakjuk a globálisat több lokálisból”
 
 ## 
 ## Azaz szakaszokra bontjuk a teljes intervallumot, és mindegyiket *külön-külön* polinommal igyekszünk modellezni
@@ -129,7 +129,7 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgri
 ## Így próbáljuk kombinálni a két módszer előnyeit
 
 ## 
-## Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: **knot**, ,,csomópont", a számukat $q-2$-val jelöljük, a pozíciójukat $x_i^{\ast}$-vel)
+## Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: **knot**, „csomópont”, a számukat $q-2$-val jelöljük, a pozíciójukat $x_i^{\ast}$-vel)
 
 ## 
 ## Sőt, ha a simasági tulajdonságokat is át akarjuk vinni, akkor az érintkezési pontokban a deriváltaknak (magasabbrendűeknek is) is egyezniük kell
@@ -144,13 +144,13 @@ p + geom_line(data = data.frame(xgrid, pred = predict(fit10, data.frame(x = xgri
 ## (Azért köbös, mert harmadfokúak a polinomok, és azért természetes, mert azt kötöttük ki, hogy a végpontokban nulla legyen a második derivált)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 fitSpline <- lm(yobs ~ splines::ns(x, 10), data = SimData)
 p + geom_line(data = data.frame(xgrid, pred = predict(fitSpline, data.frame(x = xgrid))),
               aes(x = xgrid, y = pred))
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 p + geom_line(data = rbind(data.frame(type = "Ötödfokú polinom",
                                       pred = predict(fit5, data.frame(x = xgrid)), xgrid),
                            data.frame(type = "Tizedfokú polinom",

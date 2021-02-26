@@ -347,7 +347,7 @@ Beállítjuk a második oszlopot is:
 X[, 2] <- x
 ```
 
-És most jön a trükk: az `outer` tetszőleges függvénnyel tud "külső szorzatot" képezni:
+És most jön a trükk: az `outer` tetszőleges függvénnyel tud „külső szorzatot” képezni:
 
 ```{r}
 X[, 3:q] <- outer(x, xk, FUN = rk)
@@ -418,7 +418,7 @@ Valahogy ezt is meg kellene határozni
 
 Jön a fő kérdéskör: a túlilleszkedés elleni védekezés
 
-Milyen legyen a ,,simítás foka"?
+Milyen legyen a ,,simítás foka”?
 ```
 
 A $q$ dimenzió tehát az illeszkedés szabadságát határozza meg
@@ -427,7 +427,7 @@ Valahogy ezt is meg kellene határozni
 
 Jön a fő kérdéskör: a túlilleszkedés elleni védekezés
 
-Milyen legyen a ,,simítás foka"?
+Milyen legyen a ,,simítás foka”?
 
 ### Simítás fokának meghatározása
 
@@ -440,7 +440,7 @@ Egyszerű *modellszelekció*?
 
 Alternatív ötlet: $q$ legyen inkább rögzített (elég nagy értéken, kicsit a várható fölé lőve), de a függvényformát nem engedjük teljesen szabadon alakulni
 
-Hogyan? Büntetjük a túl ,,zizegős" függvényt!
+Hogyan? Büntetjük a túl ,,zizegős” függvényt!
 
 Ez épp a **penalizált regresszió** alapötlete
 
@@ -455,7 +455,7 @@ Egyszerű *modellszelekció*?
 
 Alternatív ötlet: $q$ legyen inkább rögzített (elég nagy értéken, kicsit a várható fölé lőve), de a függvényformát nem engedjük teljesen szabadon alakulni
 
-Hogyan? Büntetjük a túl ,,zizegős" függvényt!
+Hogyan? Büntetjük a túl ,,zizegős” függvényt!
 
 Ez épp a **penalizált regresszió** alapötlete
 
@@ -464,7 +464,7 @@ Ez épp a **penalizált regresszió** alapötlete
 ### Penalizált regresszió
 
 ```{block, type="handout"}
-Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget", ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
+Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget”, ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
 
 Valamilyen súllyal ezt vegyük figyelembe:
 \[
@@ -476,7 +476,7 @@ A $\lambda$ a *simítási paraméter*, ez határozza meg a trade-off-ot a jó il
 -   $\lambda=0$: penalizálatlan becslés, $\lambda\rightarrow\infty$: egyenes regressziós függvény
 ```
 
-Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget", ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
+Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget”, ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
 
 Valamilyen súllyal ezt vegyük figyelembe:
 \[
@@ -548,7 +548,7 @@ Ez nem nehéz, ha a második tagot át tudjuk normává alakítani, hiszen (inne
 \left\|\mathbf{a}\right\|^2+\left\|\mathbf{b}\right\|^2=\left\|\begin{pmatrix}\mathbf{a} \\ \mathbf{b} \end{pmatrix}\right\|^2
 \]
 
-Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke"), ekkor
+Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke”), ekkor
 \[
 \lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \lambda \boldsymbol{\beta}^T\mathbf{B}^T\mathbf{B}\boldsymbol{\beta}=\lambda \left( \mathbf{B} \boldsymbol{\beta}\right)^T\mathbf{B}\boldsymbol{\beta} =\left( \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right)^T\left(\sqrt{\lambda}\mathbf{B}\boldsymbol{\beta}\right)
 \]
@@ -578,7 +578,7 @@ Ez nem nehéz, ha a második tagot át tudjuk normává alakítani, hiszen (inne
 \left\|\mathbf{a}\right\|^2+\left\|\mathbf{b}\right\|^2=\left\|\begin{pmatrix}\mathbf{a} \\ \mathbf{b} \end{pmatrix}\right\|^2
 \]
 
-Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke"), ekkor
+Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke”), ekkor
 \[
 \lambda \boldsymbol{\beta}^T\mathbf{S}\boldsymbol{\beta} = \lambda \boldsymbol{\beta}^T\mathbf{B}^T\mathbf{B}\boldsymbol{\beta}=\lambda \left( \mathbf{B} \boldsymbol{\beta}\right)^T\mathbf{B}\boldsymbol{\beta} =\left( \sqrt{\lambda} \mathbf{B} \boldsymbol{\beta}\right)^T\left(\sqrt{\lambda}\mathbf{B}\boldsymbol{\beta}\right)
 \]
@@ -605,9 +605,9 @@ Jó lenne $\boldsymbol{\beta}$-t kiemelni; ez nem is túl nehéz, hiszen $\mathb
 ```{block, type="handout"}
 Innentől a regresszió játszi könnyedséggel (értsd: a szokványos, nem is penalizált eszköztárral) megoldható, csak $\mathbf{X}$ szerepét $\begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}$, $\mathbf{y}$ szerepét $\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}$ játssza
 
-Így az ,,$\mathbf{X}^T\mathbf{X}$" épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
+Így az ,,$\mathbf{X}^T\mathbf{X}$” épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
 
-Az ,,$\mathbf{X}^T\mathbf{y}$" pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
+Az ,,$\mathbf{X}^T\mathbf{y}$” pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
 
 Így az OLS megoldás:
 \[
@@ -619,9 +619,9 @@ Az ,,$\mathbf{X}^T\mathbf{y}$" pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített 
 
 Innentől a regresszió játszi könnyedséggel (értsd: a szokványos, nem is penalizált eszköztárral) megoldható, csak $\mathbf{X}$ szerepét $\begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}$, $\mathbf{y}$ szerepét $\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}$ játssza
 
-Így az ,,$\mathbf{X}^T\mathbf{X}$" épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
+Így az ,,$\mathbf{X}^T\mathbf{X}$” épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
 
-Az ,,$\mathbf{X}^T\mathbf{y}$" pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
+Az ,,$\mathbf{X}^T\mathbf{y}$” pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
 
 Így az OLS megoldás:
 \[
@@ -632,7 +632,7 @@ Az ,,$\mathbf{X}^T\mathbf{y}$" pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített 
 
 ### Megvalósítás `R` alatt
 
-Mátrix "gyökének" a számítása (spektrális felbontással):
+Mátrix „gyökének” a számítása (spektrális felbontással):
 
 ```{r}
 mat.sqrt <- function(S) {

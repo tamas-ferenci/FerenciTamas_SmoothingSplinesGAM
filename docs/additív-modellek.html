@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>4 . fejezet Additív modellek | Simítás, spline-regresszió, additív modellek</title>
   <meta name="description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
-  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="4 . fejezet Additív modellek | Simítás, spline-regresszió, additív modellek" />
   <meta property="og:type" content="book" />
@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
   <meta name="twitter:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
 
-<meta name="author" content="Ferenci Tamás," />
+<meta name="author" content="Ferenci Tamás, " />
 
 
 
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"/>
 
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,7 +50,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19799395-2"></script>
 <script>
@@ -62,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -93,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -143,20 +142,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Előszó</a></li>
-<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a><ul>
+<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#motiváció"><i class="fa fa-check"></i><b>1.1</b> Motiváció</a></li>
 <li class="chapter" data-level="1.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-loess-simító-alapgondolata"><i class="fa fa-check"></i><b>1.2</b> A LOESS simító alapgondolata</a></li>
 <li class="chapter" data-level="1.3" data-path="a-loess-simító.html"><a href="a-loess-simító.html#lokalitás"><i class="fa fa-check"></i><b>1.3</b> Lokalitás</a></li>
 <li class="chapter" data-level="1.4" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinomiális-regresszió"><i class="fa fa-check"></i><b>1.4</b> Polinomiális regresszió</a></li>
 <li class="chapter" data-level="1.5" data-path="a-loess-simító.html"><a href="a-loess-simító.html#összerakva-az-építőelemeket-lokális-polinomiális-regressziókkal-közelítés"><i class="fa fa-check"></i><b>1.5</b> Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés</a></li>
 <li class="chapter" data-level="1.6" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-lokalitás"><i class="fa fa-check"></i><b>1.6</b> A paraméterek megválasztásának hatása: lokalitás</a></li>
-<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a><ul>
+<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a>
+<ul>
 <li class="chapter" data-level="1.7.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#kitérő-polinomiális-regresszió-illesztésének-szintaktikája-r-alatt"><i class="fa fa-check"></i><b>1.7.1</b> Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt</a></li>
 <li class="chapter" data-level="1.7.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinom-fokszámának-változtatása"><i class="fa fa-check"></i><b>1.7.2</b> Polinom fokszámának változtatása</a></li>
 </ul></li>
 <li class="chapter" data-level="1.8" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztása"><i class="fa fa-check"></i><b>1.8</b> A paraméterek megválasztása</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a><ul>
+<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a>
+<ul>
 <li class="chapter" data-level="2.1" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-regresszió"><i class="fa fa-check"></i><b>2.1</b> A regresszió</a></li>
 <li class="chapter" data-level="2.2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-becslése-mintából"><i class="fa fa-check"></i><b>2.2</b> Regresszió becslése mintából</a></li>
 <li class="chapter" data-level="2.3" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#paraméteres-és-nem-paraméteres-regresszió"><i class="fa fa-check"></i><b>2.3</b> Paraméteres és nem-paraméteres regresszió</a></li>
@@ -172,8 +174,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.13" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-az-előbbiben-a-fantasztikus"><i class="fa fa-check"></i><b>2.13</b> Mi az előbbiben a fantasztikus?</a></li>
 <li class="chapter" data-level="2.14" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-spline-regresszió-ereje"><i class="fa fa-check"></i><b>2.14</b> A spline-regresszió ereje</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a><ul>
-<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a><ul>
+<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a>
+<ul>
 <li class="chapter" data-level="3.1.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hogyan-becsüljük-meg-a-spline-regressziót"><i class="fa fa-check"></i><b>3.1.1</b> Hogyan becsüljük meg a spline-regressziót?</a></li>
 <li class="chapter" data-level="3.1.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-tere-mint-függvénytér"><i class="fa fa-check"></i><b>3.1.2</b> Polinomok tere mint függvénytér</a></li>
 <li class="chapter" data-level="3.1.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-terének-bázisa"><i class="fa fa-check"></i><b>3.1.3</b> Polinomok terének bázisa</a></li>
@@ -182,7 +186,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hány-dimenziós-a-spline-ok-tere"><i class="fa fa-check"></i><b>3.1.6</b> Hány dimenziós a spline-ok tere?</a></li>
 <li class="chapter" data-level="3.1.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#mik-a-spline-ok-bázisfüggvényei"><i class="fa fa-check"></i><b>3.1.7</b> Mik a spline-ok bázisfüggvényei?</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a><ul>
+<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-használatának-ereje"><i class="fa fa-check"></i><b>3.2.1</b> A bázisfüggvények használatának ereje</a></li>
 <li class="chapter" data-level="3.2.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használata-másodfokú-polinomnál"><i class="fa fa-check"></i><b>3.2.2</b> Bázisfüggvények használata másodfokú polinomnál</a></li>
 <li class="chapter" data-level="3.2.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használatának-előnye"><i class="fa fa-check"></i><b>3.2.3</b> Bázisfüggvények használatának előnye</a></li>
@@ -190,7 +195,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-2.-felvonás"><i class="fa fa-check"></i><b>3.2.5</b> A bázisfüggvények ereje, 2. felvonás</a></li>
 <li class="chapter" data-level="3.2.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt"><i class="fa fa-check"></i><b>3.2.6</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a><ul>
+<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a>
+<ul>
 <li class="chapter" data-level="3.3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#dimenzió-meghatározása"><i class="fa fa-check"></i><b>3.3.1</b> Dimenzió meghatározása</a></li>
 <li class="chapter" data-level="3.3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítás-fokának-meghatározása"><i class="fa fa-check"></i><b>3.3.2</b> Simítás fokának meghatározása</a></li>
 <li class="chapter" data-level="3.3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizált-regresszió"><i class="fa fa-check"></i><b>3.3.3</b> Penalizált regresszió</a></li>
@@ -200,14 +206,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#regresszió-megoldása-a-penalizálással"><i class="fa fa-check"></i><b>3.3.7</b> Regresszió megoldása a penalizálással</a></li>
 <li class="chapter" data-level="3.3.8" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-2"><i class="fa fa-check"></i><b>3.3.8</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a><ul>
+<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a>
+<ul>
 <li class="chapter" data-level="3.4.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4.1</b> A simítási paraméter meghatározása</a></li>
 <li class="chapter" data-level="3.4.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-ocv"><i class="fa fa-check"></i><b>3.4.2</b> Keresztvalidációs módszerek: OCV</a></li>
 <li class="chapter" data-level="3.4.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-gcv"><i class="fa fa-check"></i><b>3.4.3</b> Keresztvalidációs módszerek: GCV</a></li>
 <li class="chapter" data-level="3.4.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-3"><i class="fa fa-check"></i><b>3.4.4</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a><ul>
+<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="additív-modellek.html"><a href="additív-modellek.html#több-magyarázó-változó"><i class="fa fa-check"></i><b>4.1</b> Több magyarázó változó</a></li>
 </ul></li>
 <li class="divider"></li>
@@ -235,9 +243,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   \DeclareMathOperator*{\argmax}{arg\,max}
   \newcommand{\dif}{\mathop{}\!\mathrm{d}}
 \]
-<div id="additív-modellek" class="section level1">
+<div id="additív-modellek" class="section level1" number="4">
 <h1><span class="header-section-number">4 . fejezet</span> Additív modellek</h1>
-<div id="több-magyarázó-változó" class="section level2">
+<div id="több-magyarázó-változó" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Több magyarázó változó</h2>
 <div class="handout">
 <p>
@@ -248,21 +256,21 @@ Eddig egy magyarázó változó esetével foglalkoztunk
 
 </div>
 </div>
-<!-- Default Statcounter code for Physcon Research
-http://research.physcon.uni-obuda.hu/ -->
+<!-- Default Statcounter code for Ferenci Tamás
+elektronikus jegy https://tamas-ferenci.github.io/ -->
 <script type="text/javascript">
-var sc_project=11601191; 
+var sc_project=12422840; 
 var sc_invisible=1; 
-var sc_security="5a06c22d"; 
+var sc_security="d32cce24"; 
 </script>
 <script type="text/javascript"
 src="https://www.statcounter.com/counter/counter.js"
 async></script>
-<noscript><div class="statcounter"><a title="ingyen
-webstatisztika" href="https://www.statcounter.hu/"
+<noscript><div class="statcounter"><a title="látogató
+számláló" href="https://www.statcounter.hu/"
 target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/11601191/0/5a06c22d/1/"
-alt="ingyen webstatisztika"></a></div></noscript>
+src="https://c.statcounter.com/12422840/0/d32cce24/1/"
+alt="látogató számláló"></a></div></noscript>
 <!-- End of Statcounter Code -->
             </section>
 

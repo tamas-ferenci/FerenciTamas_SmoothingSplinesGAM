@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2 . fejezet Spline fogalma, lineáris regressziótól a spline-regresszióig | Simítás, spline-regresszió, additív modellek</title>
   <meta name="description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
-  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2 . fejezet Spline fogalma, lineáris regressziótól a spline-regresszióig | Simítás, spline-regresszió, additív modellek" />
   <meta property="og:type" content="book" />
@@ -21,7 +21,7 @@
   <meta name="twitter:description" content="Ez a jegyzet simítóeljárásokkal (pl. LOESS), a spline-okkal, és azok regresszióban történő felhasználásával, valamint általában az additív modellekkel foglalkozik." />
   <meta name="twitter:image" content="https://tamas-ferenci.github.io/FerenciTamas_SmoothingSplinesGAM/FerenciTamas_SmoothingSplinesGAM_cover.png" />
 
-<meta name="author" content="Ferenci Tamás," />
+<meta name="author" content="Ferenci Tamás, " />
 
 
 
@@ -32,6 +32,7 @@
   
 <link rel="prev" href="a-loess-simító.html"/>
 <link rel="next" href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"/>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -49,7 +50,6 @@
 
 
 
-<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19799395-2"></script>
 <script>
@@ -62,18 +62,17 @@
 
 
 <style type="text/css">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -93,7 +92,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -143,20 +142,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Előszó</a></li>
-<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a><ul>
+<li class="chapter" data-level="1" data-path="a-loess-simító.html"><a href="a-loess-simító.html"><i class="fa fa-check"></i><b>1</b> A LOESS simító</a>
+<ul>
 <li class="chapter" data-level="1.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#motiváció"><i class="fa fa-check"></i><b>1.1</b> Motiváció</a></li>
 <li class="chapter" data-level="1.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-loess-simító-alapgondolata"><i class="fa fa-check"></i><b>1.2</b> A LOESS simító alapgondolata</a></li>
 <li class="chapter" data-level="1.3" data-path="a-loess-simító.html"><a href="a-loess-simító.html#lokalitás"><i class="fa fa-check"></i><b>1.3</b> Lokalitás</a></li>
 <li class="chapter" data-level="1.4" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinomiális-regresszió"><i class="fa fa-check"></i><b>1.4</b> Polinomiális regresszió</a></li>
 <li class="chapter" data-level="1.5" data-path="a-loess-simító.html"><a href="a-loess-simító.html#összerakva-az-építőelemeket-lokális-polinomiális-regressziókkal-közelítés"><i class="fa fa-check"></i><b>1.5</b> Összerakva az építőelemeket: lokális polinomiális regressziókkal közelítés</a></li>
 <li class="chapter" data-level="1.6" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-lokalitás"><i class="fa fa-check"></i><b>1.6</b> A paraméterek megválasztásának hatása: lokalitás</a></li>
-<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a><ul>
+<li class="chapter" data-level="1.7" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztásának-hatása-a-polinom-fokszáma"><i class="fa fa-check"></i><b>1.7</b> A paraméterek megválasztásának hatása: a polinom fokszáma</a>
+<ul>
 <li class="chapter" data-level="1.7.1" data-path="a-loess-simító.html"><a href="a-loess-simító.html#kitérő-polinomiális-regresszió-illesztésének-szintaktikája-r-alatt"><i class="fa fa-check"></i><b>1.7.1</b> Kitérő: polinomiális regresszió illesztésének szintaktikája R alatt</a></li>
 <li class="chapter" data-level="1.7.2" data-path="a-loess-simító.html"><a href="a-loess-simító.html#polinom-fokszámának-változtatása"><i class="fa fa-check"></i><b>1.7.2</b> Polinom fokszámának változtatása</a></li>
 </ul></li>
 <li class="chapter" data-level="1.8" data-path="a-loess-simító.html"><a href="a-loess-simító.html#a-paraméterek-megválasztása"><i class="fa fa-check"></i><b>1.8</b> A paraméterek megválasztása</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a><ul>
+<li class="chapter" data-level="2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><i class="fa fa-check"></i><b>2</b> Spline fogalma, lineáris regressziótól a spline-regresszióig</a>
+<ul>
 <li class="chapter" data-level="2.1" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-regresszió"><i class="fa fa-check"></i><b>2.1</b> A regresszió</a></li>
 <li class="chapter" data-level="2.2" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#regresszió-becslése-mintából"><i class="fa fa-check"></i><b>2.2</b> Regresszió becslése mintából</a></li>
 <li class="chapter" data-level="2.3" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#paraméteres-és-nem-paraméteres-regresszió"><i class="fa fa-check"></i><b>2.3</b> Paraméteres és nem-paraméteres regresszió</a></li>
@@ -172,8 +174,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.13" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#mi-az-előbbiben-a-fantasztikus"><i class="fa fa-check"></i><b>2.13</b> Mi az előbbiben a fantasztikus?</a></li>
 <li class="chapter" data-level="2.14" data-path="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#a-spline-regresszió-ereje"><i class="fa fa-check"></i><b>2.14</b> A spline-regresszió ereje</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a><ul>
-<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a><ul>
+<li class="chapter" data-level="3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><i class="fa fa-check"></i><b>3</b> Spline-regresszió becslése bázisfüggvényekkel, penalizáltan</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvényekkel-felírás"><i class="fa fa-check"></i><b>3.1</b> Bázisfüggvényekkel felírás</a>
+<ul>
 <li class="chapter" data-level="3.1.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hogyan-becsüljük-meg-a-spline-regressziót"><i class="fa fa-check"></i><b>3.1.1</b> Hogyan becsüljük meg a spline-regressziót?</a></li>
 <li class="chapter" data-level="3.1.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-tere-mint-függvénytér"><i class="fa fa-check"></i><b>3.1.2</b> Polinomok tere mint függvénytér</a></li>
 <li class="chapter" data-level="3.1.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#polinomok-terének-bázisa"><i class="fa fa-check"></i><b>3.1.3</b> Polinomok terének bázisa</a></li>
@@ -182,7 +186,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.1.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#hány-dimenziós-a-spline-ok-tere"><i class="fa fa-check"></i><b>3.1.6</b> Hány dimenziós a spline-ok tere?</a></li>
 <li class="chapter" data-level="3.1.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#mik-a-spline-ok-bázisfüggvényei"><i class="fa fa-check"></i><b>3.1.7</b> Mik a spline-ok bázisfüggvényei?</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a><ul>
+<li class="chapter" data-level="3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#modellmátrix-előállítása"><i class="fa fa-check"></i><b>3.2</b> Modellmátrix előállítása</a>
+<ul>
 <li class="chapter" data-level="3.2.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-használatának-ereje"><i class="fa fa-check"></i><b>3.2.1</b> A bázisfüggvények használatának ereje</a></li>
 <li class="chapter" data-level="3.2.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használata-másodfokú-polinomnál"><i class="fa fa-check"></i><b>3.2.2</b> Bázisfüggvények használata másodfokú polinomnál</a></li>
 <li class="chapter" data-level="3.2.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#bázisfüggvények-használatának-előnye"><i class="fa fa-check"></i><b>3.2.3</b> Bázisfüggvények használatának előnye</a></li>
@@ -190,7 +195,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.2.5" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-bázisfüggvények-ereje-2.-felvonás"><i class="fa fa-check"></i><b>3.2.5</b> A bázisfüggvények ereje, 2. felvonás</a></li>
 <li class="chapter" data-level="3.2.6" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt"><i class="fa fa-check"></i><b>3.2.6</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a><ul>
+<li class="chapter" data-level="3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizálás"><i class="fa fa-check"></i><b>3.3</b> Penalizálás</a>
+<ul>
 <li class="chapter" data-level="3.3.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#dimenzió-meghatározása"><i class="fa fa-check"></i><b>3.3.1</b> Dimenzió meghatározása</a></li>
 <li class="chapter" data-level="3.3.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítás-fokának-meghatározása"><i class="fa fa-check"></i><b>3.3.2</b> Simítás fokának meghatározása</a></li>
 <li class="chapter" data-level="3.3.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#penalizált-regresszió"><i class="fa fa-check"></i><b>3.3.3</b> Penalizált regresszió</a></li>
@@ -200,14 +206,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="3.3.7" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#regresszió-megoldása-a-penalizálással"><i class="fa fa-check"></i><b>3.3.7</b> Regresszió megoldása a penalizálással</a></li>
 <li class="chapter" data-level="3.3.8" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-2"><i class="fa fa-check"></i><b>3.3.8</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a><ul>
+<li class="chapter" data-level="3.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4</b> Simítási paraméter meghatározása</a>
+<ul>
 <li class="chapter" data-level="3.4.1" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#a-simítási-paraméter-meghatározása"><i class="fa fa-check"></i><b>3.4.1</b> A simítási paraméter meghatározása</a></li>
 <li class="chapter" data-level="3.4.2" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-ocv"><i class="fa fa-check"></i><b>3.4.2</b> Keresztvalidációs módszerek: OCV</a></li>
 <li class="chapter" data-level="3.4.3" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#keresztvalidációs-módszerek-gcv"><i class="fa fa-check"></i><b>3.4.3</b> Keresztvalidációs módszerek: GCV</a></li>
 <li class="chapter" data-level="3.4.4" data-path="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html"><a href="spline-regresszió-becslése-bázisfüggvényekkel-penalizáltan.html#megvalósítás-r-alatt-3"><i class="fa fa-check"></i><b>3.4.4</b> Megvalósítás <code>R</code> alatt</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a><ul>
+<li class="chapter" data-level="4" data-path="additív-modellek.html"><a href="additív-modellek.html"><i class="fa fa-check"></i><b>4</b> Additív modellek</a>
+<ul>
 <li class="chapter" data-level="4.1" data-path="additív-modellek.html"><a href="additív-modellek.html#több-magyarázó-változó"><i class="fa fa-check"></i><b>4.1</b> Több magyarázó változó</a></li>
 </ul></li>
 <li class="divider"></li>
@@ -235,9 +243,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   \DeclareMathOperator*{\argmax}{arg\,max}
   \newcommand{\dif}{\mathop{}\!\mathrm{d}}
 \]
-<div id="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig" class="section level1">
+<div id="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig" class="section level1" number="2">
 <h1><span class="header-section-number">2 . fejezet</span> Spline fogalma, lineáris regressziótól a spline-regresszióig</h1>
-<div id="a-regresszió" class="section level2">
+<div id="a-regresszió" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> A regresszió</h2>
 <div class="handout">
 <p>
@@ -247,7 +255,7 @@ A regresszió legtöbb alkalmazott statisztikai terület talán legfontosabb esz
 <strong>Regresszió</strong>: változók közti kapcsolat (illetve annak becslése minta alapján)
 </p>
 <p>
-,,Kapcsolat" formalizálása: függvény a matematikai fogalmával, tehát keressük az <span class="math display"><span class="math display">\[
+„Kapcsolat” formalizálása: függvény a matematikai fogalmával, tehát keressük az <span class="math display"><span class="math display">\[
 Y=f\left(X_1,X_2,\ldots,X_p\right)+\varepsilon=f\left(\mathbf{X}\right)
 \]</span></span> függvényt
 </p>
@@ -257,18 +265,18 @@ Y=f\left(X_1,X_2,\ldots,X_p\right)+\varepsilon=f\left(\mathbf{X}\right)
 </div>
 <p>A regresszió legtöbb alkalmazott statisztikai terület talán legfontosabb eszköze</p>
 <p><strong>Regresszió</strong>: változók közti kapcsolat (illetve annak becslése minta alapján)</p>
-<p>,,Kapcsolat" formalizálása: függvény a matematikai fogalmával, tehát keressük az
+<p>„Kapcsolat” formalizálása: függvény a matematikai fogalmával, tehát keressük az
 <span class="math display">\[
 Y=f\left(X_1,X_2,\ldots,X_p\right)+\varepsilon=f\left(\mathbf{X}\right)
 \]</span>
 függvényt</p>
 <p>(<span class="math inline">\(Y\)</span> eredményváltozó, <span class="math inline">\(X_i\)</span>-k a magyarázó változók)</p>
 </div>
-<div id="regresszió-becslése-mintából" class="section level2">
+<div id="regresszió-becslése-mintából" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Regresszió becslése mintából</h2>
 <div class="handout">
 <p>
-<strong>Paraméteres regresszió</strong>: ha <em>a priori</em> feltételezzük, hogy az <span class="math inline"><span class="math inline">\(f\)</span></span> függvény valamilyen – paraméterek erejéig meghatározott – függvényformájú (az ,,alakja" ismert), és így a feladat e paraméterek becslésére redukálódik
+<strong>Paraméteres regresszió</strong>: ha <em>a priori</em> feltételezzük, hogy az <span class="math inline"><span class="math inline">\(f\)</span></span> függvény valamilyen – paraméterek erejéig meghatározott – függvényformájú (az „alakja” ismert), és így a feladat e paraméterek becslésére redukálódik
 </p>
 <p>
 Tipikus példa a <strong>lineáris regresszió</strong>: <span class="math inline"><span class="math inline">\(f\left(\mathbf{X}\right)=\beta_0+\beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p=\mathbf{X}^T\pmb{\beta}\)</span></span>, így <span class="math inline"><span class="math inline">\(Y=\mathbf{X}^T\pmb{\beta}+\varepsilon\)</span></span>
@@ -282,7 +290,7 @@ Ha rendelkezésre állnak az <span class="math inline"><span class="math inline"
 Itt tehát <span class="math inline"><span class="math inline">\(\mathbf{X}\)</span></span> az a mátrix, amiben a magyarázó változók elé egy csupa 1 oszlopot szúrtunk, a neve <strong>modellmátrix</strong> vagy design mátrix
 </p>
 </div>
-<p><strong>Paraméteres regresszió</strong>: ha <em>a priori</em> feltételezzük, hogy az <span class="math inline">\(f\)</span> függvény valamilyen – paraméterek erejéig meghatározott – függvényformájú (az ,,alakja" ismert), és így a feladat e paraméterek becslésére redukálódik</p>
+<p><strong>Paraméteres regresszió</strong>: ha <em>a priori</em> feltételezzük, hogy az <span class="math inline">\(f\)</span> függvény valamilyen – paraméterek erejéig meghatározott – függvényformájú (az „alakja" ismert), és így a feladat e paraméterek becslésére redukálódik</p>
 <p>Tipikus példa a <strong>lineáris regresszió</strong>: <span class="math inline">\(f\left(\mathbf{X}\right)=\beta_0+\beta_1 X_1 + \beta_2 X_2 + \ldots + \beta_p X_p=\mathbf{X}^T\pmb{\beta}\)</span>, így <span class="math inline">\(Y=\mathbf{X}^T\pmb{\beta}+\varepsilon\)</span></p>
 <p>Ha rendelkezésre állnak az <span class="math inline">\(\left\{y_i,\mathbf{x}_i\right\}_{i=1}^n\)</span> megfigyeléseink a háttéreloszlásra, akkor e mintából megbecsülhetjük a paramétereket például <strong>hagyományos legkisebb négyzetek</strong> (OLS) módszerével:
 <span class="math display">\[
@@ -290,11 +298,11 @@ Itt tehát <span class="math inline"><span class="math inline">\(\mathbf{X}\)</s
 \]</span></p>
 <p>Itt tehát <span class="math inline">\(\mathbf{X}\)</span> az a mátrix, amiben a magyarázó változók elé egy csupa 1 oszlopot szúrtunk, a neve <strong>modellmátrix</strong> vagy design mátrix</p>
 </div>
-<div id="paraméteres-és-nem-paraméteres-regresszió" class="section level2">
+<div id="paraméteres-és-nem-paraméteres-regresszió" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Paraméteres és nem-paraméteres regresszió</h2>
 <div class="handout">
 <p>
-De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára <em>jó feltételezést</em> tettünk-e (hiszen ez nem az adatokból következik, ezt ,,ráerőszakoljuk" az adatokra)
+De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára <em>jó feltételezést</em> tettünk-e (hiszen ez nem az adatokból következik, ezt „ráerőszakoljuk” az adatokra)
 </p>
 <p>
 (Persze ezért van a modelldiagnosztika)
@@ -303,15 +311,15 @@ De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára <
 A nem-paraméteres regresszió <em>flexibilis</em>, olyan értelemben, hogy minden a priori megkötés nélkül követi azt, ami az adatokból következik (a valóság ritkán lineáris?)
 </p>
 <p>
-Cserében nehezebb becsülni, és nem kapunk analitikus – jó esetben valamire hasznosítható – regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni (,,fordul a kocka" a paraméteres esethez képest)
+Cserében nehezebb becsülni, és nem kapunk analitikus – jó esetben valamire hasznosítható – regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni („fordul a kocka" a paraméteres esethez képest)
 </p>
 </div>
-<p>De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára <em>jó feltételezést</em> tettünk-e (hiszen ez nem az adatokból következik, ezt ,,ráerőszakoljuk" az adatokra)</p>
+<p>De cserében mindig ott lebeg felettünk a kérdés, hogy a függvényformára <em>jó feltételezést</em> tettünk-e (hiszen ez nem az adatokból következik, ezt „ráerőszakoljuk” az adatokra)</p>
 <p>(Persze ezért van a modelldiagnosztika)</p>
 <p>A nem-paraméteres regresszió <em>flexibilis</em>, olyan értelemben, hogy minden a priori megkötés nélkül követi azt, ami az adatokból következik (a valóság ritkán lineáris?)</p>
-<p>Cserében nehezebb becsülni, és nem kapunk analitikus – jó esetben valamire hasznosítható – regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni (,,fordul a kocka" a paraméteres esethez képest)</p>
+<p>Cserében nehezebb becsülni, és nem kapunk analitikus – jó esetben valamire hasznosítható – regressziós függvényt, nem lehet értelmesen interpolálni és extrapolálni („fordul a kocka" a paraméteres esethez képest)</p>
 </div>
-<div id="a-lineáris-regresszió-kibővítése-nemlinearitások" class="section level2">
+<div id="a-lineáris-regresszió-kibővítése-nemlinearitások" class="section level2" number="2.4">
 <h2><span class="header-section-number">2.4</span> A lineáris regresszió kibővítése, nemlinearitások</h2>
 <div class="handout">
 <p>
@@ -326,7 +334,7 @@ E nemlinearitásoknak két alaptípusa van
 <ul>
 <li>
 <p>
-Változójában nemlineáris modell (pl. <span class="math inline"><span class="math inline">\(\beta_0 + \beta_1 x + \beta_2 x^2\)</span></span>): csak a szó ,,matematikai értelmében" nemlineáris, ugyanúgy becsülhető OLS-sel
+Változójában nemlineáris modell (pl. <span class="math inline"><span class="math inline">\(\beta_0 + \beta_1 x + \beta_2 x^2\)</span></span>): csak a szó „matematikai értelmében” nemlineáris, ugyanúgy becsülhető OLS-sel
 </p>
 </li>
 <li>
@@ -339,20 +347,20 @@ Paraméterében nemlineáris modell (pl. <span class="math inline"><span class="
 Mi most az első esettel fogunk foglalkozni
 </p>
 <p>
-Az itt látott ,,polinomiális regresszió" valóban nagyon gyakori módszer a flexibilitás növelésére
+Az itt látott „polinomiális regresszió” valóban nagyon gyakori módszer a flexibilitás növelésére
 </p>
 </div>
 <p>Maradva a paraméteres keretben, arra azért mód van, hogy a függvényformát kibővítsük (és így flexibilisebbé tegyük)</p>
 <p>Ezzel a különféle <strong>nemlineáris regressziókhoz</strong> jutunk el</p>
 <p>E nemlinearitásoknak két alaptípusa van</p>
 <ul>
-<li><p>Változójában nemlineáris modell (pl. <span class="math inline">\(\beta_0 + \beta_1 x + \beta_2 x^2\)</span>): csak a szó ,,matematikai értelmében" nemlineáris, ugyanúgy becsülhető OLS-sel</p></li>
+<li><p>Változójában nemlineáris modell (pl. <span class="math inline">\(\beta_0 + \beta_1 x + \beta_2 x^2\)</span>): csak a szó „matematikai értelmében” nemlineáris, ugyanúgy becsülhető OLS-sel</p></li>
 <li><p>Paraméterében nemlineáris modell (pl. <span class="math inline">\(\beta_0x_1^{\beta_1}x_2^{\beta_2}\)</span>): felrúgja a lineáris struktúrát, így érdemileg más, csak linearizálás után, vagy NLS-sel becsülhető</p></li>
 </ul>
 <p>Mi most az első esettel fogunk foglalkozni</p>
-<p>Az itt látott ,,polinomiális regresszió" valóban nagyon gyakori módszer a flexibilitás növelésére</p>
+<p>Az itt látott „polinomiális regresszió” valóban nagyon gyakori módszer a flexibilitás növelésére</p>
 </div>
-<div id="egy-példa" class="section level2">
+<div id="egy-példa" class="section level2" number="2.5">
 <h2><span class="header-section-number">2.5</span> Egy példa</h2>
 <div class="handout">
 <p>
@@ -360,25 +368,25 @@ Tekintsünk most egy másik példát, egy zajos másodfokú függvényt, keveseb
 </p>
 </div>
 <p>Tekintsünk most egy másik példát, egy zajos másodfokú függvényt, kevesebb pontból:</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-1"></a>n &lt;-<span class="st"> </span><span class="dv">20</span></span>
-<span id="cb51-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-2"></a>x &lt;-<span class="st"> </span><span class="kw">runif</span>(n, <span class="dv">0</span>, <span class="dv">10</span>)</span>
-<span id="cb51-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-3"></a>xgrid &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="dt">length.out =</span> <span class="dv">100</span>)</span>
-<span id="cb51-4"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-4"></a>ygrid &lt;-<span class="st"> </span>xgrid<span class="op">^</span><span class="dv">2</span></span>
-<span id="cb51-5"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-5"></a>yobs &lt;-<span class="st"> </span>x<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">5</span>)</span>
-<span id="cb51-6"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-6"></a>SimData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(x, xgrid, ygrid, yobs)</span>
-<span id="cb51-7"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-7"></a>p &lt;-<span class="st"> </span><span class="kw">ggplot</span>(SimData) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> yobs)) <span class="op">+</span></span>
-<span id="cb51-8"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-8"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> ygrid), <span class="dt">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="dt">lwd =</span> <span class="dv">1</span>)</span>
-<span id="cb51-9"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-9"></a>p</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-1" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb51-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">runif</span>(n, <span class="dv">0</span>, <span class="dv">10</span>)</span>
+<span id="cb51-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-3" aria-hidden="true" tabindex="-1"></a>xgrid <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">10</span>, <span class="at">length.out =</span> <span class="dv">100</span>)</span>
+<span id="cb51-4"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-4" aria-hidden="true" tabindex="-1"></a>ygrid <span class="ot">&lt;-</span> xgrid<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb51-5"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-5" aria-hidden="true" tabindex="-1"></a>yobs <span class="ot">&lt;-</span> x<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">5</span>)</span>
+<span id="cb51-6"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-6" aria-hidden="true" tabindex="-1"></a>SimData <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(x, xgrid, ygrid, yobs)</span>
+<span id="cb51-7"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-7" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(SimData) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> yobs)) <span class="sc">+</span></span>
+<span id="cb51-8"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> xgrid, <span class="at">y =</span> ygrid), <span class="at">color =</span> <span class="st">&quot;orange&quot;</span>, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb51-9"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb51-9" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div>
 <p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="regresszió-ötödfokú-polinommal" class="section level2">
+<div id="regresszió-ötödfokú-polinommal" class="section level2" number="2.6">
 <h2><span class="header-section-number">2.6</span> Regresszió ötödfokú polinommal</h2>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-1"></a>fit5 &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(x, <span class="dv">5</span>), <span class="dt">data =</span> SimData)</span>
-<span id="cb52-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-2"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">data.frame</span>(xgrid, <span class="dt">pred =</span> <span class="kw">predict</span>(fit5, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid))),</span>
-<span id="cb52-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-3"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> pred))</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-1" aria-hidden="true" tabindex="-1"></a>fit5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(yobs <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">5</span>), <span class="at">data =</span> SimData)</span>
+<span id="cb52-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(xgrid, <span class="at">pred =</span> <span class="fu">predict</span>(fit5, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid))),</span>
+<span id="cb52-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb52-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> xgrid, <span class="at">y =</span> pred))</span></code></pre></div>
 <p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="módosítás" class="section level2">
+<div id="módosítás" class="section level2" number="2.7">
 <h2><span class="header-section-number">2.7</span> Módosítás</h2>
 <div class="handout">
 <p>
@@ -403,14 +411,14 @@ Szokás azt mondani, hogy a rang 5 illetve 10 (a polinom fokszáma, a becsülend
 <p>Emeljük a polinom fokszámát (ez nyilván növeli a flexibilitást, hiszen a kisebb fokszám nyilván speciális eset lesz), például 10-re</p>
 <p>Szokás azt mondani, hogy a rang 5 illetve 10 (a polinom fokszáma, a becsülendő paraméterek száma nyilván egyezik a modellmátrix rangjával, de ez a fogalom később, amikor nem is polinomunk van, akkor is használható)</p>
 </div>
-<div id="regresszió-tizedfokú-polinommal" class="section level2">
+<div id="regresszió-tizedfokú-polinommal" class="section level2" number="2.8">
 <h2><span class="header-section-number">2.8</span> Regresszió tizedfokú polinommal</h2>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-1"></a>fit10 &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span><span class="kw">poly</span>(x, <span class="dv">10</span>), <span class="dt">data =</span> SimData)</span>
-<span id="cb53-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-2"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">data.frame</span>(xgrid, <span class="dt">pred =</span> <span class="kw">predict</span>(fit10, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid))),</span>
-<span id="cb53-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-3"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> pred))</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-1" aria-hidden="true" tabindex="-1"></a>fit10 <span class="ot">&lt;-</span> <span class="fu">lm</span>(yobs <span class="sc">~</span> <span class="fu">poly</span>(x, <span class="dv">10</span>), <span class="at">data =</span> SimData)</span>
+<span id="cb53-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(xgrid, <span class="at">pred =</span> <span class="fu">predict</span>(fit10, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid))),</span>
+<span id="cb53-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb53-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> xgrid, <span class="at">y =</span> pred))</span></code></pre></div>
 <p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="mi-a-jelenség-oka" class="section level2">
+<div id="mi-a-jelenség-oka" class="section level2" number="2.9">
 <h2><span class="header-section-number">2.9</span> Mi a jelenség oka?</h2>
 <div class="handout">
 <p>
@@ -431,11 +439,11 @@ Mi lehet akkor a megoldás?
 <p>Pedig a polinomokat amúgy szeretjük, többek között azért is, mert szép sima görbét írnak le (matematikai értelemben véve a simaságot: végtelenszer folytonosan deriválhatóak, <span class="math inline">\(C^{\infty}\)</span>-beliek)</p>
 <p>Mi lehet akkor a megoldás?</p>
 </div>
-<div id="mi-lehet-a-megoldás" class="section level2">
+<div id="mi-lehet-a-megoldás" class="section level2" number="2.10">
 <h2><span class="header-section-number">2.10</span> Mi lehet a megoldás?</h2>
 <div class="handout">
 <p>
-Egy lehetséges megközelítés: ,,összerakjuk a globálisat több lokálisból"
+Egy lehetséges megközelítés: „összerakjuk a globálisat több lokálisból”
 </p>
 <p>
 Azaz szakaszokra bontjuk a teljes intervallumot, és mindegyiket <em>külön-külön</em> polinommal igyekszünk modellezni
@@ -444,7 +452,7 @@ Azaz szakaszokra bontjuk a teljes intervallumot, és mindegyiket <em>külön-kü
 Így próbáljuk kombinálni a két módszer előnyeit
 </p>
 <p>
-Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: <strong>knot</strong>, ,,csomópont", a számukat <span class="math inline"><span class="math inline">\(q-2\)</span></span>-val jelöljük, a pozíciójukat <span class="math inline"><span class="math inline">\(x_i^{\ast}\)</span></span>-vel)
+Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: <strong>knot</strong>, „csomópont”, a számukat <span class="math inline"><span class="math inline">\(q-2\)</span></span>-val jelöljük, a pozíciójukat <span class="math inline"><span class="math inline">\(x_i^{\ast}\)</span></span>-vel)
 </p>
 <p>
 Sőt, ha a simasági tulajdonságokat is át akarjuk vinni, akkor az érintkezési pontokban a deriváltaknak (magasabbrendűeknek is) is egyezniük kell
@@ -456,15 +464,15 @@ Ha <span class="math inline"><span class="math inline">\(p\)</span></span>-edfok
 Ez így már jó konstrukció lesz, a neve: <strong>spline</strong>
 </p>
 </div>
-<p>Egy lehetséges megközelítés: ,,összerakjuk a globálisat több lokálisból"</p>
+<p>Egy lehetséges megközelítés: „összerakjuk a globálisat több lokálisból”</p>
 <p>Azaz szakaszokra bontjuk a teljes intervallumot, és mindegyiket <em>külön-külön</em> polinommal igyekszünk modellezni</p>
 <p>Így próbáljuk kombinálni a két módszer előnyeit</p>
-<p>Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: <strong>knot</strong>, ,,csomópont", a számukat <span class="math inline">\(q-2\)</span>-val jelöljük, a pozíciójukat <span class="math inline">\(x_i^{\ast}\)</span>-vel)</p>
+<p>Persze a szakaszosan definiált polinomok önmagában még nem jók: a szakaszhatárokon találkozniuk kell (e találkozópontok neve: <strong>knot</strong>, „csomópont”, a számukat <span class="math inline">\(q-2\)</span>-val jelöljük, a pozíciójukat <span class="math inline">\(x_i^{\ast}\)</span>-vel)</p>
 <p>Sőt, ha a simasági tulajdonságokat is át akarjuk vinni, akkor az érintkezési pontokban a deriváltaknak (magasabbrendűeknek is) is egyezniük kell</p>
 <p>Ha <span class="math inline">\(p\)</span>-edfokú polinomokat használunk, akkor az első <span class="math inline">\(p-1\)</span> derivált – és persze a függvényérték – egyezését kell kikötnünk a knot-okban (és esetleg még valamit a végpontokra)</p>
 <p>Ez így már jó konstrukció lesz, a neve: <strong>spline</strong></p>
 </div>
-<div id="természetes-köbös-spline" class="section level2">
+<div id="természetes-köbös-spline" class="section level2" number="2.11">
 <h2><span class="header-section-number">2.11</span> Természetes köbös spline</h2>
 <div class="handout">
 <p>
@@ -477,26 +485,26 @@ Ez így már jó konstrukció lesz, a neve: <strong>spline</strong>
 <p class="caption">Természetes köbös spline</p>
 </div>
 </div>
-<div id="a-példa-regressziója-természetes-köbös-spline-nal" class="section level2">
+<div id="a-példa-regressziója-természetes-köbös-spline-nal" class="section level2" number="2.12">
 <h2><span class="header-section-number">2.12</span> A példa regressziója természetes köbös spline-nal</h2>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-1"></a>fitSpline &lt;-<span class="st"> </span><span class="kw">lm</span>(yobs <span class="op">~</span><span class="st"> </span>splines<span class="op">::</span><span class="kw">ns</span>(x, <span class="dv">10</span>), <span class="dt">data =</span> SimData)</span>
-<span id="cb54-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-2"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">data.frame</span>(xgrid, <span class="dt">pred =</span> <span class="kw">predict</span>(fitSpline, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid))),</span>
-<span id="cb54-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-3"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> pred))</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-1" aria-hidden="true" tabindex="-1"></a>fitSpline <span class="ot">&lt;-</span> <span class="fu">lm</span>(yobs <span class="sc">~</span> splines<span class="sc">::</span><span class="fu">ns</span>(x, <span class="dv">10</span>), <span class="at">data =</span> SimData)</span>
+<span id="cb54-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-2" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">data.frame</span>(xgrid, <span class="at">pred =</span> <span class="fu">predict</span>(fitSpline, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid))),</span>
+<span id="cb54-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb54-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> xgrid, <span class="at">y =</span> pred))</span></code></pre></div>
 <p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="mi-az-előbbiben-a-fantasztikus" class="section level2">
+<div id="mi-az-előbbiben-a-fantasztikus" class="section level2" number="2.13">
 <h2><span class="header-section-number">2.13</span> Mi az előbbiben a fantasztikus?</h2>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-1"></a>p <span class="op">+</span><span class="st"> </span><span class="kw">geom_line</span>(<span class="dt">data =</span> <span class="kw">rbind</span>(<span class="kw">data.frame</span>(<span class="dt">type =</span> <span class="st">&quot;Ötödfokú polinom&quot;</span>,</span>
-<span id="cb55-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-2"></a>                                      <span class="dt">pred =</span> <span class="kw">predict</span>(fit5, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid)), xgrid),</span>
-<span id="cb55-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-3"></a>                           <span class="kw">data.frame</span>(<span class="dt">type =</span> <span class="st">&quot;Tizedfokú polinom&quot;</span>,</span>
-<span id="cb55-4"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-4"></a>                                      <span class="dt">pred =</span> <span class="kw">predict</span>(fit10, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid)), xgrid),</span>
-<span id="cb55-5"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-5"></a>                           <span class="kw">data.frame</span>(<span class="dt">type =</span> <span class="st">&quot;Spline&quot;</span>,</span>
-<span id="cb55-6"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-6"></a>                                      <span class="dt">pred =</span> <span class="kw">predict</span>(fitSpline, <span class="kw">data.frame</span>(<span class="dt">x =</span> xgrid)),</span>
-<span id="cb55-7"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-7"></a>                                      xgrid)),</span>
-<span id="cb55-8"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-8"></a>              <span class="kw">aes</span>(<span class="dt">x =</span> xgrid, <span class="dt">y =</span> pred, <span class="dt">color =</span> type)) <span class="op">+</span><span class="st"> </span><span class="kw">labs</span>(<span class="dt">color =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-1" aria-hidden="true" tabindex="-1"></a>p <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">data =</span> <span class="fu">rbind</span>(<span class="fu">data.frame</span>(<span class="at">type =</span> <span class="st">&quot;Ötödfokú polinom&quot;</span>,</span>
+<span id="cb55-2"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-2" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">pred =</span> <span class="fu">predict</span>(fit5, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid)), xgrid),</span>
+<span id="cb55-3"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-3" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">data.frame</span>(<span class="at">type =</span> <span class="st">&quot;Tizedfokú polinom&quot;</span>,</span>
+<span id="cb55-4"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-4" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">pred =</span> <span class="fu">predict</span>(fit10, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid)), xgrid),</span>
+<span id="cb55-5"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-5" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">data.frame</span>(<span class="at">type =</span> <span class="st">&quot;Spline&quot;</span>,</span>
+<span id="cb55-6"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">pred =</span> <span class="fu">predict</span>(fitSpline, <span class="fu">data.frame</span>(<span class="at">x =</span> xgrid)),</span>
+<span id="cb55-7"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-7" aria-hidden="true" tabindex="-1"></a>                                      xgrid)),</span>
+<span id="cb55-8"><a href="spline-fogalma-lineáris-regressziótól-a-spline-regresszióig.html#cb55-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> xgrid, <span class="at">y =</span> pred, <span class="at">color =</span> type)) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 <p><img src="FerenciTamas_SmoothingSplinesGAM_files/figure-html/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="a-spline-regresszió-ereje" class="section level2">
+<div id="a-spline-regresszió-ereje" class="section level2" number="2.14">
 <h2><span class="header-section-number">2.14</span> A spline-regresszió ereje</h2>
 <div class="handout">
 <p>
@@ -515,21 +523,21 @@ Mégis: nyoma nincs túlilleszkedésnek
 
 </div>
 </div>
-<!-- Default Statcounter code for Physcon Research
-http://research.physcon.uni-obuda.hu/ -->
+<!-- Default Statcounter code for Ferenci Tamás
+elektronikus jegy https://tamas-ferenci.github.io/ -->
 <script type="text/javascript">
-var sc_project=11601191; 
+var sc_project=12422840; 
 var sc_invisible=1; 
-var sc_security="5a06c22d"; 
+var sc_security="d32cce24"; 
 </script>
 <script type="text/javascript"
 src="https://www.statcounter.com/counter/counter.js"
 async></script>
-<noscript><div class="statcounter"><a title="ingyen
-webstatisztika" href="https://www.statcounter.hu/"
+<noscript><div class="statcounter"><a title="látogató
+számláló" href="https://www.statcounter.hu/"
 target="_blank"><img class="statcounter"
-src="https://c.statcounter.com/11601191/0/5a06c22d/1/"
-alt="ingyen webstatisztika"></a></div></noscript>
+src="https://c.statcounter.com/12422840/0/d32cce24/1/"
+alt="látogató számláló"></a></div></noscript>
 <!-- End of Statcounter Code -->
             </section>
 

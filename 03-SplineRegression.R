@@ -200,7 +200,7 @@
 ## \]
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 n <- 30
 x <- runif(n, 0, 1)
 xgrid <- seq(0, 1, length.out = 100)
@@ -212,30 +212,30 @@ p <- ggplot(data.frame(x, yobs)) + geom_point(aes(x = x, y = yobs)) +
 p
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 xk <- 1:4/5
 q <- length(xk) + 2
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rk <- function( x, z ) {
     ((z-0.5)^2-1/12)*((x-0.5)^2-1/12)/4-((abs(x-z)-0.5)^4-(abs(x-z)-0.5)^2/2+7/240)/24
 }
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 X <- matrix(1, n, q) 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 X[, 2] <- x
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 X[, 3:q] <- outer(x, xk, FUN = rk)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 spl.X <- function(x, xk) {
     q <- length(xk) + 2
     n <- length(x)
@@ -246,17 +246,17 @@ spl.X <- function(x, xk) {
 }
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 fit <- lm(yobs ~ X - 1 )
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Xp <- spl.X(xgrid, xk)
 yp <- Xp%*%coef(fit)
 p + geom_line(data = data.frame(xgrid, yp), aes(x = xgrid, y = yp))
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 predspline <- function(x, y, q) {
     xk <- (1:(q-2))/(q-1)
     X <- spl.X(x, xk)
@@ -268,7 +268,7 @@ predspline <- function(x, y, q) {
 }
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 p + geom_line(data = with(predspline(x, yobs, 6), data.frame(xp, yp)),
               aes(x = xp, y = yp))
 p + geom_line(data = with(predspline(x, yobs, 11), data.frame(xp, yp)),
@@ -286,7 +286,7 @@ p + geom_line(data = with(predspline(x, yobs, 3), data.frame(xp, yp)),
 ## Jön a fő kérdéskör: a túlilleszkedés elleni védekezés
 
 ## 
-## Milyen legyen a ,,simítás foka"?
+## Milyen legyen a ,,simítás foka”?
 
 
 ## Tehát $q$-t kellene valahogy jól belőni
@@ -301,7 +301,7 @@ p + geom_line(data = with(predspline(x, yobs, 3), data.frame(xp, yp)),
 ## Alternatív ötlet: $q$ legyen inkább rögzített (elég nagy értéken, kicsit a várható fölé lőve), de a függvényformát nem engedjük teljesen szabadon alakulni
 
 ## 
-## Hogyan? Büntetjük a túl ,,zizegős" függvényt!
+## Hogyan? Büntetjük a túl ,,zizegős” függvényt!
 
 ## 
 ## Ez épp a **penalizált regresszió** alapötlete
@@ -310,7 +310,7 @@ p + geom_line(data = with(predspline(x, yobs, 3), data.frame(xp, yp)),
 ## És ami rendkívül fontos: így már jellemzően sem $q$ pontos megválasztása, sem a knot-ok pontos helye nem bír nagy jelentőséggel (választhatjuk például egyenletesen)!
 
 
-## Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget", ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
+## Klasszikus megoldás: a második derivált jelzi adott pontban a ,,zizegősséget”, ezt kiintegrálva kapunk egy összesített mértéket az egész függvényre
 
 ## 
 ## Valamilyen súllyal ezt vegyük figyelembe:
@@ -355,7 +355,7 @@ p + geom_line(data = with(predspline(x, yobs, 3), data.frame(xp, yp)),
 ## Az előbb definiált $R$-rel $\mathbf{S}$ alakja nagyon egyszerű lesz: $S_{i+2,j+2}=R\left(x_i^{\ast},x_j^{\ast}\right)$, az első két oszlop és sor pedig csupa nulla
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 spl.S <- function(xk) {
     q <- length(xk) + 2
     S <- matrix(0, q, q)
@@ -376,7 +376,7 @@ spl.S <- function(xk) {
 ## \]
 
 ## 
-## Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke"), ekkor
+## Legyen $\mathbf{B}$ olyan, hogy $\mathbf{B}^T\mathbf{B}=\mathbf{S}$ (pl. spektrális dekompozícióval, vagy Cholesky-dekompozícióval megtalálható a mátrix ilyen ,,négyzetgyöke”), ekkor
 
 ## \[
 
@@ -420,10 +420,10 @@ spl.S <- function(xk) {
 ## Innentől a regresszió játszi könnyedséggel (értsd: a szokványos, nem is penalizált eszköztárral) megoldható, csak $\mathbf{X}$ szerepét $\begin{pmatrix}\mathbf{X} \\ \sqrt{\lambda} \mathbf{B} \end{pmatrix}$, $\mathbf{y}$ szerepét $\begin{pmatrix} \mathbf{y} \\ \mathbf{0} \end{pmatrix}$ játssza
 
 ## 
-## Így az ,,$\mathbf{X}^T\mathbf{X}$" épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
+## Így az ,,$\mathbf{X}^T\mathbf{X}$” épp $\mathbf{X}^T\mathbf{X}+\lambda \mathbf{B}^T\mathbf{B}=\mathbf{X}^T\mathbf{X}+\lambda\mathbf{S}$ lesz
 
 ## 
-## Az ,,$\mathbf{X}^T\mathbf{y}$" pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
+## Az ,,$\mathbf{X}^T\mathbf{y}$” pedig $\mathbf{X}^T\mathbf{y}$ (a kiegészített eredményváltozóban lévő nullák épp a magyarázó változók kiegészítését ütik ki)
 
 ## 
 ## Így az OLS megoldás:
@@ -438,14 +438,14 @@ spl.S <- function(xk) {
 ## (Persze a gyakorlatban ennek közvetlen számítása helyett célszerűbb az augmentált eredmény- és magyarázóváltozókat berakni egy hatékonyabb lineáris regressziót megoldó módszerbe)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 mat.sqrt <- function(S) {
     d <- eigen(S, symmetric = TRUE)
     d$vectors%*%diag(d$values^0.5)%*%t(d$vectors)
 }
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 predsplinepen <- function(x, y, q, lambda) {
     xk <- (1:(q-2))/(q-1)
     Xa <- rbind(spl.X(x, xk), sqrt(lambda) * mat.sqrt(spl.S(xk)))
@@ -458,7 +458,7 @@ predsplinepen <- function(x, y, q, lambda) {
 }
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 p + geom_line(data = with(predsplinepen(x, yobs, 20, 1), data.frame(xp, yp)),
               aes(x = xp, y = yp))
 p + geom_line(data = with(predsplinepen(x, yobs, 20, 0.001), data.frame(xp, yp)),
@@ -517,7 +517,7 @@ p + geom_line(data = with(predsplinepen(x, yobs, 20, 0.000001), data.frame(xp, y
 ## \]
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 predV <- 10^(seq(-8, 3, length.out = 100))
 V <- sapply(predV, function(lambda) {
     fit <- predsplinepen(x, yobs, 20, lambda)$fit
@@ -528,11 +528,11 @@ V <- sapply(predV, function(lambda) {
 ggplot(data.frame(predV, V), aes(x = predV, y = V)) + geom_line() + scale_x_log10()
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 predV[which.min(V)]
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------------------------------------------------------------------------
 p + geom_line(data = with(predsplinepen(x, yobs, 20, predV[which.min(V)]),
                           data.frame(xp, yp)), aes(x = xp, y = yp))
 
